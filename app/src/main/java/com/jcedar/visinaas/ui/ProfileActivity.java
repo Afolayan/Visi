@@ -101,7 +101,7 @@ public class ProfileActivity extends BaseActivity {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NavigationDrawerFragment.MenuConstants.NAVDRAWER_ITEM_ACCOUNTS;
+        return NavigationDrawerFragment.MenuConstants.NAVDRAWER_ITEM_PROFILE;
     }
 
 }

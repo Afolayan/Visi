@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AppEventsLogger;
 import com.facebook.Request;
@@ -26,7 +27,9 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.jcedar.visinaas.R;
+import com.jcedar.visinaas.gcm.RegisterApp;
 import com.jcedar.visinaas.helper.AccountUtils;
 import com.jcedar.visinaas.helper.AppHelper;
 import com.jcedar.visinaas.helper.AppSettings;
@@ -39,6 +42,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
+import me.drakeet.materialdialog.MaterialDialog;
+
 public class FbActivity extends FragmentActivity {
 
     private static final String TAG = FbActivity.class.getSimpleName();
@@ -48,13 +53,14 @@ public class FbActivity extends FragmentActivity {
     private ImageView imageView;
     private boolean isEmailChecked = false;
     private Button checkEmail;
-
+    GoogleCloudMessaging gcm;
+    String regid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if ( ! AccountUtils.isFirstRun(this)) {
-            startActivity( new Intent( this, Dashboard.class));
+            startActivity( new Intent( this, DashboardActivity.class));
             finish();
         }
         uiHelper = new UiLifecycleHelper(this, statusCallback);
@@ -109,7 +115,7 @@ public class FbActivity extends FragmentActivity {
                         AppHelper.pullAndSaveStudentChapterData(FbActivity.this);
                         AppHelper.pullAndSaveAllStudentData(FbActivity.this);
 
-                        startActivity(new Intent(FbActivity.this, Dashboard.class));
+                        startActivity(new Intent(FbActivity.this, DashboardActivity.class));
                         AccountUtils.setFirstRun(false, FbActivity.this);
                         FbActivity.this.finish();
                         //imageView.setVisibility(View.VISIBLE);
@@ -160,6 +166,8 @@ public class FbActivity extends FragmentActivity {
 
     public class CheckUserEmail extends AsyncTask<Void, Void, String>{
         ProgressDialog dialog = new ProgressDialog(FbActivity.this);
+        MaterialDialog dialog1 = new MaterialDialog(FbActivity.this);
+
 
         String emailS ;
         public CheckUserEmail(String email){
@@ -175,13 +183,12 @@ public class FbActivity extends FragmentActivity {
         }
 
 
-
         @Override
         protected String doInBackground(Void... params) {
            String result="";
             try {
                 String url = AppSettings.SERVER_URL +"check_email.php?email="+emailS;
-                result = new ServiceHandler().makeServiceCall(url, ServiceHandler.GET);
+                result =  ServiceHandler.makeServiceCall(url, ServiceHandler.GET);
                 Log.e(TAG, result +" json");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -194,17 +201,16 @@ public class FbActivity extends FragmentActivity {
             super.onPostExecute(s);
             if( dialog.isShowing())
                 dialog.dismiss();
-            if (s.contains("name") ){
-            parseUserJson(s);
-
-            //if ( AccountUtils.getUserGender(FbActivity.this) != null ) {
+            //if ( isJSONValid(s) ){
+            if ( s.equals("404")){
+                UIUtils.showAlert("Oops!!!", emailS+ " is not found in the database", FbActivity.this);
+            } else if ( s.equals("101")){
+                UIUtils.showAlert("Oops!!!", "Enter a valid email address", FbActivity.this);
+            } else {
+                parseUserJson(s);
                 isEmailChecked = true;
                 loginBtn.setVisibility(View.VISIBLE);
             }
-            else {
-                UIUtils.showAlert("Oops!!!", emailS+ " is not found in the database", FbActivity.this);
-            }
-            // parse data
         }
     }
 
@@ -261,7 +267,22 @@ public class FbActivity extends FragmentActivity {
             Log.e(TAG, student[0].getChapter() +" chapter");
         } catch (Exception e){
             e.printStackTrace();
+        }finally {
+            Log.d(TAG, "inside finally block!!!");
+            if (UIUtils.checkPlayServices(this)) {
+                gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+                regid = AccountUtils.getRegistrationId(getApplicationContext());
+
+                if (regid.isEmpty()) {
+                    new RegisterApp(getApplicationContext(), gcm, UIUtils.getAppVersion(getApplicationContext())).execute();
+                }else{
+                    Toast.makeText(getApplicationContext(), "Device already Registered", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Log.d(TAG, "No valid Google Play Services APK found.");
+            }
         }
+
 
     }
 }

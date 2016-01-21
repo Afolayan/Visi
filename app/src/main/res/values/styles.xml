@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-   <!-- &lt;!&ndash; Base application theme. &ndash;&gt;
+    <!-- &lt;!&ndash; Base application theme. &ndash;&gt;
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         &lt;!&ndash; Customize your theme here. &ndash;&gt;
     </style>-->
@@ -9,7 +9,7 @@
         <item name="android:windowExitAnimation">@anim/slide_out_right</item>
     </style>
 
-  <style name="LoginHelpText">
+    <style name="LoginHelpText">
         <item name="android:textSize">@dimen/text_size_medium</item>
         <item name="android:lineSpacingMultiplier">1.1</item>
         <item name="android:textColor">@color/body_text_1</item>
@@ -17,13 +17,13 @@
     </style>
 
 
-
-       <style name="LoginFormContainer">
+    <style name="LoginFormContainer">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">16dp</item>
 
     </style>
+
     <style name="cardTextView1">
         <item name="android:textSize">12sp</item>
         <item name="android:gravity">start</item>
@@ -44,30 +44,35 @@
     </style>
 
 
-   <!--For FAB-->
+    <!--For FAB-->
 
-        <style name="AppTheme" parent="android:Theme.Material.Light.DarkActionBar" >
-            <item name="android:colorPrimary">@color/green</item>
-            <item name="android:colorPrimaryDark" tools:targetApi="lollipop">@color/green</item>
-            <item name="android:colorAccent">@color/green</item>
-            <item name="android:colorControlHighlight">@color/green</item>
-        </style>
+    <style name="AppTheme" parent="android:Theme.Material.Light.DarkActionBar">
+        <item name="android:colorPrimary">@color/green</item>
+        <item name="android:colorPrimaryDark" tools:targetApi="lollipop">@color/green</item>
+        <item name="android:colorAccent">@color/green</item>
+        <item name="android:colorControlHighlight">@color/green</item>
+    </style>
 
-        <style name="FloatingActionButton" parent="android:Widget.Material.Button">
-            <item name="android:background">@drawable/fab_background</item>
-            <item name="android:stateListAnimator">@anim/fab_state_list_animator</item>
-            <item name="android:layout_width">56dp</item>
-            <item name="android:layout_height">56dp</item>
-        </style>
+    <style name="FloatingActionButton" parent="android:Widget.Material.Button">
+        <item name="android:background">@drawable/fab_background</item>
+        <item name="android:stateListAnimator">@anim/fab_state_list_animator</item>
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">56dp</item>
+    </style>
 
-        <style name="FloatingActionButton.Mini">
-            <item name="android:layout_width">40dp</item>
-            <item name="android:layout_height">40dp</item>
-            <item name="android:layout_margin">8dp</item>
-        </style>
+    <style name="FloatingActionButton.Mini">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
     <style name="menu_labels_style">
         <item name="android:background">@drawable/fab_label_background</item>
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="Theme.Gardener.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Gardener.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

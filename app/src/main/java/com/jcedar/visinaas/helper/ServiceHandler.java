@@ -58,6 +58,8 @@ public class ServiceHandler {
             HttpEntity httpEntity = null;
             HttpResponse httpResponse = null;
 
+            HttpGet httpget = new HttpGet("https://host/");
+
             // Checking http request method type
             if (method == POST) {
                 HttpPost httpPost = new HttpPost(url);

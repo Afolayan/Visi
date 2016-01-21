@@ -6,10 +6,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,16 +19,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.jcedar.visinaas.R;
+import com.jcedar.visinaas.adapter.SearchResultsCursorAdapter;
+import com.jcedar.visinaas.adapter.WrappingLinearLayoutManager;
 import com.jcedar.visinaas.io.adapters.StudentCursorAdapter;
 import com.jcedar.visinaas.provider.DataContract;
 import com.jcedar.visinaas.ui.view.SimpleSectionedListAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class HomeFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AllStudentListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     protected static final String NAIRA = "\u20A6";
-    private static final String TAG = HomeFragment.class.getSimpleName();
+    private static final String TAG = AllStudentListFragment.class.getSimpleName();
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -47,18 +47,22 @@ public class HomeFragment extends ListFragment implements LoaderManager.LoaderCa
     private Bundle mHomeBundle = Bundle.EMPTY;
     private String _POSITION = "position";
     private Listener mCallback;
+    static String context;
 
+    RecyclerView recyclerView;
+    SearchResultsCursorAdapter resultsCursorAdapter;
 
-    public static HomeFragment newInstance(int position) {
-        HomeFragment fragment = new HomeFragment();
+    public static AllStudentListFragment newInstance(int position) {
+        AllStudentListFragment fragment = new AllStudentListFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, position);
+
 
         fragment.setArguments(args);
         return fragment;
     }
 
-    public HomeFragment() {
+    public AllStudentListFragment() {
         // Required empty public constructor
     }
 
@@ -91,8 +95,10 @@ public class HomeFragment extends ListFragment implements LoaderManager.LoaderCa
 
         sSectionAdapter = new SimpleSectionedListAdapter(getActivity(),
                 R.layout.list_group_header, mAdapter);
+    context = getActivity().getClass().getSimpleName();
+
         // setListAdapter(mAdapter);
-        setListAdapter(sSectionAdapter);
+        /*setListAdapter(sSectionAdapter);*/
         setHasOptionsMenu(true);
     }
 
@@ -100,49 +106,89 @@ public class HomeFragment extends ListFragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        ViewGroup rootView =
-                (ViewGroup) inflater.inflate(R.layout.fragment_dash, container, false);
+        ViewGroup rootView;
 
+        if( !context.equalsIgnoreCase("AllStudentDetailsActivity")) {
+             rootView =
+                    (ViewGroup) inflater.inflate(R.layout.fragment_home, container, false);
+        } else {
+            rootView =
+                    (ViewGroup) inflater.inflate(R.layout.fragment_home1, container, false);
+        }
+        recyclerView = (RecyclerView) rootView.findViewById( R.id.recyclerview );
+        resultsCursorAdapter = new SearchResultsCursorAdapter( getActivity() );
+
+        recyclerView.setLayoutManager(new WrappingLinearLayoutManager(getContext()));
+        recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setHasFixedSize(false);
+        recyclerView.setAdapter(resultsCursorAdapter);
         tvError = (TextView) rootView.findViewById(R.id.tvErrorMag);
-        listView = (ListView) rootView.findViewById(android.R.id.list);
 
-        listView.setItemsCanFocus(true);
-        listView.setCacheColorHint(getResources().getColor(
-                R.color.white));
-        listView.setVerticalScrollBarEnabled(true);
-        listView.setDividerHeight(0);
+        resultsCursorAdapter.setOnItemClickListener(new SearchResultsCursorAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClicked(Cursor data) {
+
+                long Id = data.getLong(
+                        data.getColumnIndex(DataContract.Students._ID));
+                Log.d(TAG, "selectedId = " + Id + _POSITION);
+                // add position to bundle
+                //mHomeBundle.putInt(_POSITION, position);
+                mCallback.onAllSelected(Id);
+
+
+            }
+        });
 
         return rootView;
 
     }
 
-    public ListView getListView() {
-        return listView;
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        final Cursor cursor = (Cursor) sSectionAdapter.getItem(position);
-        if (cursor != null) {
-            long Id = cursor.getLong(
-                    cursor.getColumnIndex(DataContract.Students._ID));
-            Log.d(TAG, "selectedId = " + Id + _POSITION);
-            // add position to bundle
-            mHomeBundle.putInt(_POSITION, position);
-            mCallback.onAllSelected(Id, mHomeBundle);
-        }
-
-    }
-
     interface Listener {
-        void onAllSelected(long courseId, Bundle data);
-        void onFragmentAttached(ListFragment fragment);
-        void onFragmentDetached(ListFragment fragment);
+        void onAllSelected(long courseId);
+        void onFragmentDetached(Fragment fragment);
+        void onFragmentAttached(Fragment fragment);
     }
 
 
+    private void getSOO(Cursor data){
+        String nameStr = data.getString(
+                data.getColumnIndexOrThrow(DataContract.StudentsChapter.NAME));
+
+        String genderStr = data.getString(
+                data.getColumnIndexOrThrow(DataContract.StudentsChapter.GENDER));
+
+
+        String chapter = data.getString(
+                data.getColumnIndexOrThrow(DataContract.StudentsChapter.CHAPTER));
+
+
+        String emailAdd = data.getString(
+                data.getColumnIndexOrThrow(DataContract.StudentsChapter.EMAIL));
+
+        String course = data.getString(
+                data.getColumnIndexOrThrow(DataContract.StudentsChapter.COURSE));
+
+
+        String phone = data.getString(
+                data.getColumnIndexOrThrow(DataContract.StudentsChapter.PHONE_NUMBER));
+
+        String dateOfBirth = data.getString(
+                data.getColumnIndexOrThrow(DataContract.StudentsChapter.DATE_OF_BIRTH));
+
+        Log.e(TAG, nameStr+" name "+chapter);
+
+        /*details.putString(DataContract.StudentsChapter.NAME, nameStr);
+        details.putString(DataContract.StudentsChapter.GENDER, genderStr);
+        details.putString(DataContract.StudentsChapter.CHAPTER, chapter);
+        details.putString(DataContract.StudentsChapter.EMAIL, emailAdd);
+        details.putString(DataContract.StudentsChapter.COURSE, course);
+        details.putString(DataContract.StudentsChapter.PHONE_NUMBER, phone);
+        details.putString(DataContract.StudentsChapter.DATE_OF_BIRTH, dateOfBirth);
+*/
+                /*Intent intent = new Intent(getActivity(), Details.class);
+                intent.putExtras(details);
+                startActivity( intent );*/
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -178,7 +224,7 @@ public class HomeFragment extends ListFragment implements LoaderManager.LoaderCa
             if (!isAdded()) {
                 return;
             }
-            getLoaderManager().restartLoader(1, null, HomeFragment.this);
+            getLoaderManager().restartLoader(1, null, AllStudentListFragment.this);
         }
     };
 
@@ -191,7 +237,7 @@ public class HomeFragment extends ListFragment implements LoaderManager.LoaderCa
                     DataContract.Students.PROJECTION_ALL,
                     null,    // selection
                     null,           // arguments
-                    DataContract.Students.CHAPTER + " ASC"
+                    DataContract.Students.NAME + " ASC"
             );
         return cursorLoader;
     }
@@ -199,14 +245,16 @@ public class HomeFragment extends ListFragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Bundle bundle = new Bundle();
-        int count = 0;
+
+        resultsCursorAdapter.swapCursor(data);
 
         /*if( data.getCount() == 0) {
             tvError.setVisibility(View.VISIBLE);
             tvError.setText(  "No data yet");
         }*/
-
+        /*
+        Bundle bundle = new Bundle();
+        int count = 0;
         List<SimpleSectionedListAdapter.Section> sections =
                 new ArrayList<SimpleSectionedListAdapter.Section>();
         String chapter, dummy="dummy";
@@ -242,13 +290,13 @@ public class HomeFragment extends ListFragment implements LoaderManager.LoaderCa
             tvError.setVisibility(View.VISIBLE);
             tvError.setText("Error retrieving data ");
 
-        }
+        }*/
 
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        resultsCursorAdapter.swapCursor(null);
     }
 
 

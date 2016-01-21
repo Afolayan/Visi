@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -25,14 +24,14 @@ import com.jcedar.visinaas.ui.view.SlidingTabLayout;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Dashboard extends BaseActivity
-        implements   DashboardFragment.Listener, HomeFragment.Listener{
+public class DashboardActivity extends BaseActivity
+        implements   StudentListFragment.Listener, AllStudentListFragment.Listener{
 
     private Toolbar toolbar;
     private SlidingTabLayout tabs;
-    private  Context context = Dashboard.this;
-    private Set<ListFragment> mHomeFragments = new HashSet<>();
-    private static final String TAG = Dashboard.class.getSimpleName();
+    private  Context context = DashboardActivity.this;
+    private Set<Fragment> mHomeFragments = new HashSet<>();
+    private static final String TAG = DashboardActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,30 +83,28 @@ public class Dashboard extends BaseActivity
     }
 
     @Override
-    public void onSchoolSelected(long studentId, Bundle data) {
+    public void onSchoolSelected(long studentId) {
         Intent detailIntent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = DataContract.Students.buildStudentUri(studentId);
+        Uri uri = DataContract.StudentsChapter.buildStudentUri(studentId);
         detailIntent.setData(uri);
-        detailIntent.putExtra(StudentDetailsActivity.ARG_STUDENT_LIST, data);
         startActivity(detailIntent);
     }
 
     @Override
-    public void onFragmentAttached(ListFragment fragment) {
+    public void onFragmentAttached(Fragment fragment) {
         mHomeFragments.add(fragment);
     }
 
     @Override
-    public void onFragmentDetached(ListFragment fragment) {
+    public void onFragmentDetached(Fragment fragment) {
         mHomeFragments.remove(fragment);
     }
 
     @Override
-    public void onAllSelected(long studentId, Bundle data) {
+    public void onAllSelected(long studentId) {
         Intent detailIntent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = DataContract.StudentsChapter.buildStudentUri(studentId);
+        Uri uri = DataContract.Students.buildStudentUri(studentId);
         detailIntent.setData(uri);
-        detailIntent.putExtra(AllStudentDetailsActivity.ARG_ALL_LIST, data);
         startActivity(detailIntent);
     }
 
@@ -120,11 +117,10 @@ public class Dashboard extends BaseActivity
 
         @Override
         public Fragment getItem(int position) {
-            if ( position == 1)
-            return HomeFragment.newInstance(position);
-
+            if ( position == 0)
+                return StudentListFragment.newInstance(position);
             else
-            return DashboardFragment.newInstance(position);
+                return AllStudentListFragment.newInstance(position);
         }
 
         @Override
@@ -135,7 +131,7 @@ public class Dashboard extends BaseActivity
         @Override
         public CharSequence getPageTitle(int position) {
             if ( position == 0)
-            return AccountUtils.getUserChapter(context);
+                return AccountUtils.getUserChapter(context);
 
             else return "All NAAS";
         }
@@ -196,14 +192,14 @@ public class Dashboard extends BaseActivity
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
 
-        for (ListFragment fragment : mHomeFragments) {
+        for (Fragment fragment : mHomeFragments) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
                 if (!fragment.getUserVisibleHint()) {
                     continue;
                 }
             }
 
-            return ViewCompat.canScrollVertically(fragment.getListView(), -1);
+            return ViewCompat.canScrollVertically(fragment.getView(), -1);
         }
 
         return false;

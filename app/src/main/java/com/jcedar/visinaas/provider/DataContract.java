@@ -66,12 +66,12 @@ public class DataContract
         /** The mime type of a single item */
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE
-                        + "/vnd.com.jcedar.visinaas.provider.studentsChapter";
+                        + "/vnd.com.jcedar.visinaas.provider.students_chapter";
 
         /** The mime type of a single item */
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE
-                        + "/vnd.com.jcedar.visinaas.provider.studentsChapter";
+                        + "/vnd.com.jcedar.visinaas.provider.students_chapter";
 
         public static Uri buildStudentUri(long studentId){
             return CONTENT_URI.buildUpon().appendPath(Long.toString(studentId)).build();
@@ -85,7 +85,7 @@ public class DataContract
 
         };
 
-        /** The default sort order for queries containing studentsChapter */
+        /** The default sort order for queries containing students_chapter */
         public static final String SORT_ORDER_DEFAULT = NAME +" ASC";
     }
 

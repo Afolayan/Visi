@@ -2,50 +2,76 @@ package com.jcedar.visinaas.ui;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.jcedar.visinaas.R;
+import com.jcedar.visinaas.provider.DataContract;
 
 import java.util.ArrayList;
 
 public class AllStudentDetailsActivity extends BaseActivity
-            implements HomeFragment.Listener{
+            implements AllStudentListFragment.Listener{
 
     public static final String ARG_ALL_LIST = "ARG_ALL_LIST";
     private static final String TAG = AllStudentDetailsActivity.class.getSimpleName();
     public ArrayList<Long> mStudents;
-    HomeFragment mHomeFragment = null;
+    AllStudentListFragment mHomeFragment = null;
     private ViewPager mPager;
-    private AllStudentPagerAdapter mPagerAdapter;
+    //private AllStudentPagerAdapter mPagerAdapter;
     Uri mSelectedStudent;
-    
-    
+    private boolean dualPanel;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_student_details);
 
-        if (findViewById(R.id.installmentDetailsPane) != null) {
+        dualPanel = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+
+        Intent intent = getIntent();
+        mSelectedStudent = intent.getData();
+        AllStudentsDetailsFragment fragment = AllStudentsDetailsFragment.newInstance(mSelectedStudent, this);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.details, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit();
+
+        if ( dualPanel ){
+            if (getResources().getConfiguration().smallestScreenWidthDp <= 600) {
+                mHomeFragment =
+                        (AllStudentListFragment) getSupportFragmentManager()
+                                .findFragmentById(R.id.studentFrag);
+
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            } else {
+                mHomeFragment =
+                        (AllStudentListFragment) getSupportFragmentManager()
+                                .findFragmentById(R.id.studentFrag);
+            }
+        }
+   /*     if (findViewById(R.id.installmentDetailsPane) != null) {
             mHomeFragment =
-                    (HomeFragment) getSupportFragmentManager()
+                    (AllStudentListFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.studentFrag);
 
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+        }*/
+
+/*
 
         Intent intent = getIntent();
         if(intent != null){
@@ -73,6 +99,7 @@ public class AllStudentDetailsActivity extends BaseActivity
         int selectedIndex = mStudents.indexOf(
                 Long.parseLong(mSelectedStudent.getLastPathSegment()));
         mPager.setCurrentItem(selectedIndex);
+*/
 
 
         final Toolbar toolbar = getActionBarToolbar();
@@ -87,7 +114,7 @@ public class AllStudentDetailsActivity extends BaseActivity
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                toolbar.setTitle("Deatils");
+                toolbar.setTitle("Details");
             }
         });
 
@@ -120,21 +147,29 @@ public class AllStudentDetailsActivity extends BaseActivity
 
 
     @Override
-    public void onAllSelected(long studentId, Bundle data) {
-        mPager.setCurrentItem(mStudents.indexOf(studentId), true);
+    public void onAllSelected(long studentId) {
+        //mPager.setCurrentItem(mStudents.indexOf(studentId), true);
+        Uri uri = DataContract.Students.buildStudentUri(studentId);
+
+        AllStudentsDetailsFragment fragment = AllStudentsDetailsFragment.newInstance(uri, this);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.details, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
-    public void onFragmentAttached(ListFragment fragment) {
+    public void onFragmentAttached(Fragment fragment) {
 
     }
 
     @Override
-    public void onFragmentDetached(ListFragment fragment) {
+    public void onFragmentDetached(Fragment fragment) {
 
     }
 
-    private class AllStudentPagerAdapter extends FragmentStatePagerAdapter {
+    /*private class AllStudentPagerAdapter extends FragmentStatePagerAdapter {
 
 
         private final int mSize;
@@ -155,5 +190,5 @@ public class AllStudentDetailsActivity extends BaseActivity
         public int getCount() {
             return mSize;
         }
-    }
+    }*/
 }

@@ -1,6 +1,6 @@
 package com.jcedar.visinaas.ui;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -33,12 +33,13 @@ public class AllStudentsDetailsFragment extends Fragment
 
     private static final String ARGS_ALL_STUDENT_ID = "all_student_id";
     private static final String ARG_PARAM1 = "param1";
+    private static final String TAG = AllStudentsDetailsFragment.class.getSimpleName();
     private Handler handler;
-    private Uri dataUri;
+    private static Uri dataUri;
     private TextView name, description, gender, chapter, email, course, phoneNumber, dateOfBirth;
     private String mParam1 = "mParam1";
     private String cId ;
-    Toolbar toolbar;
+    Toolbar toolbar, activityToolbar;
     private String nameStr = "";
     private String emailAdd = "";
     private String phone = "";
@@ -57,6 +58,14 @@ public class AllStudentsDetailsFragment extends Fragment
         long _id = studentDetailsActivity.mStudents.get(position);
         args.putLong(ARGS_ALL_STUDENT_ID, _id);
         fragment.setArguments(args);
+        return fragment;
+    }
+    public static AllStudentsDetailsFragment newInstance(Uri uri,
+                                       AllStudentDetailsActivity studentDetailsActivity) {
+        AllStudentsDetailsFragment fragment = new AllStudentsDetailsFragment();
+        Log.e(TAG, uri+" uri");
+        dataUri = uri;
+        Log.e(TAG, dataUri+" data uri");
         return fragment;
     }
 
@@ -78,9 +87,6 @@ public class AllStudentsDetailsFragment extends Fragment
             mParam1 = args.getString(ARG_PARAM1);
             String payItemId = Long.toString(args.getLong(ARGS_ALL_STUDENT_ID));
             cId = payItemId;
-            //dataUri = dataUri.buildUpon().appendPath(payItemId).build();
-
-            // mParam2 = args.getString(ARG_PARAM2);
 
         }
     }
@@ -106,6 +112,8 @@ public class AllStudentsDetailsFragment extends Fragment
                 }
             });
         }
+        activityToolbar = ((AllStudentDetailsActivity) getActivity()).getActionBarToolbar();
+
 
         imgSendEmail = (ImageView) rootView.findViewById(R.id.send_email);
         imgSendSms = (ImageView) rootView.findViewById(R.id.send_message);
@@ -130,14 +138,14 @@ public class AllStudentsDetailsFragment extends Fragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-       /* return new CursorLoader(getActivity(), dataUri,
-                DataContract.Students.PROJECTION_ALL, null, null, null);*/
+        return new CursorLoader(getActivity(), dataUri,
+                DataContract.Students.PROJECTION_ALL, null, null, null);
 
-        return new CursorLoader(getActivity(),
+        /*return new CursorLoader(getActivity(),
                 DataContract.Students.CONTENT_URI,
                 DataContract.Students.PROJECTION_ALL,
                 DataContract.Students._ID +"=?",
-                new String[]{ cId}, null);
+                new String[]{ cId}, null);*/
     }
 
     @Override
@@ -148,18 +156,26 @@ public class AllStudentsDetailsFragment extends Fragment
 
         if(data != null && data.moveToFirst()) {
             nameStr = data.getString(
-                    data.getColumnIndexOrThrow(DataContract.StudentsChapter.NAME));
+                    data.getColumnIndexOrThrow(DataContract.Students.NAME));
             name.setText(nameStr);
+
+            Log.e(TAG, nameStr + " name");
 
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
-                    toolbar.setTitle(nameStr);
+                    if( toolbar != null) {
+                        toolbar.setTitle(nameStr);
+                    } else{
+                        if ( activityToolbar != null){
+                            activityToolbar.setTitle(nameStr);
+                        }
+                    }
                 }
             });
 
             String genderStr1 = data.getString(
-                    data.getColumnIndexOrThrow(DataContract.StudentsChapter.GENDER));
+                    data.getColumnIndexOrThrow(DataContract.Students.GENDER));
             if(genderStr1.equalsIgnoreCase("M"))
                 gender.setText("Male");
 
@@ -167,23 +183,23 @@ public class AllStudentsDetailsFragment extends Fragment
                 gender.setText("Female");
 
             chapter.setText(data.getString(
-                    data.getColumnIndexOrThrow(DataContract.StudentsChapter.CHAPTER)));
+                    data.getColumnIndexOrThrow(DataContract.Students.CHAPTER)));
 
 
             emailAdd = data.getString(
-                    data.getColumnIndexOrThrow(DataContract.StudentsChapter.EMAIL));
+                    data.getColumnIndexOrThrow(DataContract.Students.EMAIL));
             email.setText(emailAdd);
 
             course.setText(data.getString(
-                    data.getColumnIndexOrThrow(DataContract.StudentsChapter.COURSE)));
+                    data.getColumnIndexOrThrow(DataContract.Students.COURSE)));
 
 
             phone = data.getString(
-                    data.getColumnIndexOrThrow(DataContract.StudentsChapter.PHONE_NUMBER));
+                    data.getColumnIndexOrThrow(DataContract.Students.PHONE_NUMBER));
             phoneNumber.setText(phone);
 
             dateOfBirth.setText(data.getString(
-                    data.getColumnIndexOrThrow(DataContract.StudentsChapter.DATE_OF_BIRTH)));
+                    data.getColumnIndexOrThrow(DataContract.Students.DATE_OF_BIRTH)));
 
             data.close();
         }
@@ -201,7 +217,6 @@ public class AllStudentsDetailsFragment extends Fragment
         int id = v.getId();
         switch (id) {
             case R.id.call_phone:
-                Log.e("TAG", "Name " + nameStr);
                 AlertDialog dialog = new AlertDialog.Builder(getActivity())
                         .setTitle("Call")
                         .setMessage("Do you want to make a call to "+nameStr +"?")
@@ -229,7 +244,7 @@ public class AllStudentsDetailsFragment extends Fragment
             case R.id.send_message:
 
                 AlertDialog dialog1 = new AlertDialog.Builder(getActivity())
-                        .setTitle("Call")
+                        .setTitle("Message")
                         .setMessage("Do you want to send a message to "+nameStr +"?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override

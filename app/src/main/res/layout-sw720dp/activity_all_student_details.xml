@@ -12,21 +12,22 @@
         android:layout_height="match_parent"
         android:baselineAligned="false"
         android:padding="16dp"
+        android:weightSum="100"
         android:background="@color/sim_grey">
 
         <LinearLayout android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="45">
 
             <FrameLayout android:layout_width="match_parent"
-                android:id="@+id/installment_pane"
+                android:id="@+id/list_pane"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_margin="16dp"
                 android:background="@drawable/grey_frame_on_white">
 
-                <fragment android:name="com.jcedar.visinaas.ui.HomeFragment"
+                <fragment android:name="com.jcedar.visinaas.ui.AllStudentListFragment"
                     android:id="@+id/studentFrag"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
@@ -35,20 +36,18 @@
         </LinearLayout>
 
         <LinearLayout android:orientation="vertical"
-            android:id="@+id/installmentDetailsPane"
+            android:id="@+id/studentsDetailsPane"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:padding="16dp">
+            android:layout_weight="55">
 
-            <android.support.v4.view.ViewPager
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:id="@+id/pager2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="com.splasherstech.eduportal.ui.InstallmentDetailActivity"
-                />
+            <FrameLayout android:layout_width="match_parent"
+                android:id="@+id/details"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_margin="16dp"
+                android:background="@drawable/grey_frame_on_white"/>
+
 
         </LinearLayout>
 

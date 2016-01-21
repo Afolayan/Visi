@@ -319,7 +319,7 @@ public class NavigationDrawerFragment extends Fragment {
                             .addSectionItem(MenuConstants.NAVDRAWER_ITEM_ONE_PARTICIPANT,
                                     R.string.nav_drawer_item_participant,
                                     R.drawable.ic_assessment, false, true)
-                            .addSectionItem(MenuConstants.NAVDRAWER_ITEM_ACCOUNTS,
+                            .addSectionItem(MenuConstants.NAVDRAWER_ITEM_PROFILE,
                                     R.string.nav_drawer_item_profile,
                                     R.drawable.ic_account_balance, false, true);
 
@@ -340,13 +340,18 @@ public class NavigationDrawerFragment extends Fragment {
         Intent intent;
         switch (itemId) {
             case MenuConstants.NAVDRAWER_ITEM_DASHBOARD:
-                intent = new Intent(getActivity(), Dashboard.class);
+                intent = new Intent(getActivity(), DashboardActivity.class);
                 startActivity(intent);
                 getActivity().finish();
                 break;
 
-            case MenuConstants.NAVDRAWER_ITEM_ACCOUNTS:
+            case MenuConstants.NAVDRAWER_ITEM_PROFILE:
                 intent = new Intent(getActivity(), ProfileActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+                break;
+            case MenuConstants.NAVDRAWER_ITEM_ONE_PARTICIPANT:
+                intent = new Intent(getActivity(), RecyclerActivity.class);
                 startActivity(intent);
                 getActivity().finish();
                 break;
@@ -514,7 +519,7 @@ public class NavigationDrawerFragment extends Fragment {
         int NAVDRAWER_ITEM_MKT_PARTICIPANT = 0;
         int NAVDRAWER_ITEM_SETTLEMENTS = 1;
         int NAVDRAWER_ITEM_REMIITTANCE = 2;
-        int NAVDRAWER_ITEM_ACCOUNTS = 3;
+        int NAVDRAWER_ITEM_PROFILE = 3;
         int NAVDRAWER_ITEM_MKT_DEBT = 4;
         int NAVDRAWER_ITEM_SETTINGS = 5;
         int NAVDRAWER_ITEM_CREDIT_BATCH = 6;

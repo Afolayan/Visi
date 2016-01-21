@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +37,6 @@ public class StudentDetailsFragment extends Fragment
     private static final String ARG_PARAM2 = "param2";
     private static final String TAG = StudentDetailsFragment.class.getSimpleName();
     private Handler handler;
-    private Uri dataUri;
     private TextView name, description, gender, chapter, email, course, phoneNumber, dateOfBirth;
     private String mParam1 = "param1";
     private String cId;
@@ -49,21 +47,12 @@ public class StudentDetailsFragment extends Fragment
 
     private DetailsListener listener;
 
-    private ImageButton fab;
-
-    private boolean expanded = false;
-
-    private View fabAction1;
-    private View fabAction2;
-    private View fabAction3;
-
-    private float offset1;
-    private float offset2;
-    private float offset3;
     public static String nameStr="";
     private ImageView imgSendEmail;
     private ImageView imgSendSms;
     private ImageView imgCall;
+    static Uri dataUri;
+    private Toolbar activityToolbar;
 
     public StudentDetailsFragment() {
     }
@@ -75,6 +64,15 @@ public class StudentDetailsFragment extends Fragment
         long _id = studentDetailsActivity.mStudents.get(position);
         args.putLong(ARGS_STUDENT_ID, _id);
         fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static StudentDetailsFragment newInstance(Uri uri,
+                                                         StudentDetailsActivity studentDetailsActivity) {
+        StudentDetailsFragment fragment = new StudentDetailsFragment();
+        Log.e(TAG, uri+" uri");
+        dataUri = uri;
+        Log.e(TAG, dataUri+" data uri");
         return fragment;
     }
 
@@ -99,11 +97,6 @@ public class StudentDetailsFragment extends Fragment
             cId = itemId;
             mParam2 = args.getString(ARG_PARAM2);
 
-//            dataUri = dataUri.buildUpon().appendPath(itemId).build();
- //           Log.d(TAG, dataUri + " dataUri ");
-
-
-
         }
     }
 
@@ -112,7 +105,7 @@ public class StudentDetailsFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(0, Bundle.EMPTY, this);
     }
- View call, msg, mail;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -129,6 +122,7 @@ public class StudentDetailsFragment extends Fragment
                 }
             });
         }
+        activityToolbar = ((StudentDetailsActivity) getActivity()).getActionBarToolbar();
 
         imgSendEmail = (ImageView) rootView.findViewById(R.id.send_email);
         imgSendSms = (ImageView) rootView.findViewById(R.id.send_message);
@@ -178,11 +172,13 @@ public class StudentDetailsFragment extends Fragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(),
+        return new CursorLoader(getActivity(), dataUri,
+                DataContract.StudentsChapter.PROJECTION_ALL, null, null, null);
+        /*return new CursorLoader(getActivity(),
                 DataContract.StudentsChapter.CONTENT_URI,
                 DataContract.StudentsChapter.PROJECTION_ALL,
                 DataContract.StudentsChapter._ID +"=?",
-                new String[]{ cId}, null);
+                new String[]{ cId}, null);*/
     }
 
     @Override
@@ -199,7 +195,13 @@ public class StudentDetailsFragment extends Fragment
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
-                    toolbar.setTitle(nameStr);
+                    if( toolbar != null) {
+                        toolbar.setTitle(nameStr);
+                    } else{
+                        if ( activityToolbar != null){
+                            activityToolbar.setTitle(nameStr);
+                        }
+                    }
                 }
             });
 

@@ -60,7 +60,7 @@ public class FbActivity1 extends FragmentActivity {
         super.onCreate(savedInstanceState);
 
         if ( ! AccountUtils.isFirstRun(this)) {
-            startActivity( new Intent( this, Dashboard.class));
+            startActivity( new Intent( this, DashboardActivity.class));
             finish();
         }
         uiHelper = new UiLifecycleHelper(this, statusCallback);
@@ -115,7 +115,7 @@ public class FbActivity1 extends FragmentActivity {
                         AppHelper.pullAndSaveStudentChapterData(FbActivity1.this);
                         AppHelper.pullAndSaveAllStudentData(FbActivity1.this);
 
-                        startActivity(new Intent(FbActivity1.this, Dashboard.class));
+                        startActivity(new Intent(FbActivity1.this, DashboardActivity.class));
                         AccountUtils.setFirstRun(false, FbActivity1.this);
                         FbActivity1.this.finish();
                         //imageView.setVisibility(View.VISIBLE);

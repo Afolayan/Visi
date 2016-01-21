@@ -1,7 +1,6 @@
 package com.jcedar.visinaas.ui;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,13 +18,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.jcedar.visinaas.R;
-import com.jcedar.visinaas.ui.view.SimpleSectionedListAdapter;
 import com.jcedar.visinaas.io.adapters.StudentCursorAdapter;
 import com.jcedar.visinaas.provider.DataContract;
+import com.jcedar.visinaas.ui.view.SimpleSectionedListAdapter;
 
-public class DashboardFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class HomeFragment1 extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     protected static final String NAIRA = "\u20A6";
-    private static final String TAG = DashboardFragment.class.getSimpleName();
+    private static final String TAG = AllStudentListFragment.class.getSimpleName();
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -36,18 +38,19 @@ public class DashboardFragment extends ListFragment implements LoaderManager.Loa
     // TODO: Rename and change types of parameters
     private int mPosition;
     private String mParam2;
-    public static final String STUDENT_POSITION = "position";
 
+    private OnFragmentInteractionListener mListener;
     private StudentCursorAdapter mAdapter;
     private SimpleSectionedListAdapter sSectionAdapter;
     private ListView listView;
     private TextView tvError;
-    private Bundle mStudentBundle = Bundle.EMPTY;
+    private Bundle mHomeBundle = Bundle.EMPTY;
+    private String _POSITION = "position";
     private Listener mCallback;
 
 
-    public static DashboardFragment newInstance(int position) {
-        DashboardFragment fragment = new DashboardFragment();
+    public static HomeFragment1 newInstance(int position) {
+        HomeFragment1 fragment = new HomeFragment1();
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, position);
 
@@ -55,7 +58,7 @@ public class DashboardFragment extends ListFragment implements LoaderManager.Loa
         return fragment;
     }
 
-    public DashboardFragment() {
+    public HomeFragment1() {
         // Required empty public constructor
     }
 
@@ -64,19 +67,15 @@ public class DashboardFragment extends ListFragment implements LoaderManager.Loa
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Initialize loader
-        // Initialize loader
-
-            getLoaderManager().initLoader(0, null, this);
-           Loader loader = getLoaderManager().getLoader(0);
-            if (loader != null && !loader.isReset()) {
-                getLoaderManager().restartLoader(0, null, this);
-            } else {
-                getLoaderManager().initLoader(0, null, this);
-            }
+        getLoaderManager().initLoader(1, null, this);
 
 
-
-
+                Loader loader1 = getLoaderManager().getLoader(1);
+                if (loader1 != null && !loader1.isReset()) {
+                    getLoaderManager().restartLoader(1, null, this);
+                } else {
+                    getLoaderManager().initLoader(1, null, this);
+                }
 
     }
 
@@ -92,7 +91,7 @@ public class DashboardFragment extends ListFragment implements LoaderManager.Loa
 
         sSectionAdapter = new SimpleSectionedListAdapter(getActivity(),
                 R.layout.list_group_header, mAdapter);
-        //setListAdapter(mAdapter);
+        // setListAdapter(mAdapter);
         setListAdapter(sSectionAdapter);
         setHasOptionsMenu(true);
     }
@@ -100,14 +99,9 @@ public class DashboardFragment extends ListFragment implements LoaderManager.Loa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
         super.onCreateView(inflater, container, savedInstanceState);
         ViewGroup rootView =
                 (ViewGroup) inflater.inflate(R.layout.fragment_dash, container, false);
-        //Initialize all necessary views in this method
-        Log.e("Fragment", "Dashboard started");
-
 
         tvError = (TextView) rootView.findViewById(R.id.tvErrorMag);
         listView = (ListView) rootView.findViewById(android.R.id.list);
@@ -118,74 +112,88 @@ public class DashboardFragment extends ListFragment implements LoaderManager.Loa
         listView.setVerticalScrollBarEnabled(true);
         listView.setDividerHeight(0);
 
-
         return rootView;
+
     }
 
     public ListView getListView() {
         return listView;
     }
 
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        final Cursor cursor = (Cursor) sSectionAdapter.getItem(position);
+        if (cursor != null) {
+            long Id = cursor.getLong(
+                    cursor.getColumnIndex(DataContract.Students._ID));
+            Log.d(TAG, "selectedId = " + Id + _POSITION);
+            // add position to bundle
+            mHomeBundle.putInt(_POSITION, position);
+            mCallback.onAllSelected(Id, mHomeBundle);
+        }
+
+    }
+
+    interface Listener {
+        void onAllSelected(long courseId, Bundle data);
+        void onFragmentAttached(ListFragment fragment);
+        void onFragmentDetached(ListFragment fragment);
+    }
+
+
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
+
+        if (activity instanceof Listener) {
             mCallback = (Listener) activity;
             mCallback.onFragmentAttached(this);
-        } catch (ClassCastException e) {
+        } else {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement fragments listener");
         }
+        activity.getContentResolver().registerContentObserver(
+                DataContract.Students.CONTENT_URI, true, mObserver);
 
-        DashboardObserver observer = new DashboardObserver(new Handler());
-        // start watching for changes
-        observer.observe();
 
-        // where we do our work
-        updateDashboard();
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        super.onDetach();
         if (getActivity() instanceof Listener) {
             ((Listener) getActivity()).onFragmentDetached(this);
         }
         getActivity().getContentResolver().unregisterContentObserver(mObserver);
-
     }
 
+    private final ContentObserver mObserver = new ContentObserver(new Handler()) {
+        @Override
+        public void onChange(boolean selfChange) {
+            if (!isAdded()) {
+                return;
+            }
+            getLoaderManager().restartLoader(1, null, HomeFragment1.this);
+        }
+    };
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri uri = DataContract.StudentsChapter.CONTENT_URI;
-        CursorLoader cursorLoader = null;
-
-           /* String chapter = AccountUtils.getUserChapter(getActivity());
-
-            if (chapter != null) {
-                String selection = DataContract.Students.CHAPTER + "=? ";
-                String[]selectionArgs = new String[]{chapter};
-
-                cursorLoader = new CursorLoader(
-                        getActivity(),
-                        uri,
-                        DataContract.Students.PROJECTION_ALL,
-                        selection,    // selection
-                        selectionArgs,           // arguments
-                        DataContract.Students.CHAPTER + " ASC"
-                );
-            }*/
-
-
-        return new CursorLoader(
-                getActivity(),
-                uri,
-                DataContract.StudentsChapter.PROJECTION_ALL,
-                null,
-                null,
-                null);
+        Uri uri = DataContract.Students.CONTENT_URI;
+        CursorLoader   cursorLoader =  new CursorLoader(
+                    getActivity(),
+                    uri,
+                    DataContract.Students.PROJECTION_ALL,
+                    null,    // selection
+                    null,           // arguments
+                    DataContract.Students.CHAPTER + " ASC"
+            );
+        return cursorLoader;
     }
 
 
@@ -194,11 +202,14 @@ public class DashboardFragment extends ListFragment implements LoaderManager.Loa
         Bundle bundle = new Bundle();
         int count = 0;
 
-       /* if( data.getCount() == 0) {
+        /*if( data.getCount() == 0) {
             tvError.setVisibility(View.VISIBLE);
             tvError.setText(  "No data yet");
-        }
-*/
+        }*/
+
+        List<SimpleSectionedListAdapter.Section> sections =
+                new ArrayList<SimpleSectionedListAdapter.Section>();
+        String chapter, dummy="dummy";
 
         if( data.moveToFirst() ) {
             mAdapter.swapCursor(data);
@@ -207,18 +218,29 @@ public class DashboardFragment extends ListFragment implements LoaderManager.Loa
             data.moveToFirst();
             while ( !data.isAfterLast()) {
 
+               chapter = data.getString( data.getColumnIndex( DataContract.Students.CHAPTER));
+
+                if( !chapter.equalsIgnoreCase(dummy)){
+                    sections.add( new SimpleSectionedListAdapter.Section( data.getPosition(),
+                            chapter));
+                }
+
+                dummy = chapter;
+
                 long studentId = data.getLong(
                         data.getColumnIndexOrThrow(DataContract.Students._ID));
-
-                bundle.putLong(StudentDetailsActivity.ARG_STUDENT_LIST
+                SimpleSectionedListAdapter.Section[] sectionArray =
+                        new SimpleSectionedListAdapter.Section[sections.size()];
+                sSectionAdapter.setSections(sections.toArray(sectionArray));
+                bundle.putLong(AllStudentDetailsActivity.ARG_ALL_LIST
                         + Integer.toString(count++), studentId);
                 data.moveToNext();
             }
-           this.mStudentBundle = bundle;
+          this.mHomeBundle = bundle;
         } else {
             mAdapter.swapCursor(null);
             tvError.setVisibility(View.VISIBLE);
-            tvError.setText("Error retrieving data");
+            tvError.setText("Error retrieving data ");
 
         }
 
@@ -228,65 +250,13 @@ public class DashboardFragment extends ListFragment implements LoaderManager.Loa
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
 
-        final Cursor cursor = (Cursor) sSectionAdapter.getItem(position);
-        if (cursor != null) {
-            long Id = cursor.getLong(
-                    cursor.getColumnIndex(DataContract.Students._ID));
-            Log.d(TAG, "selectedId = " + Id + STUDENT_POSITION);
-            // add position to bundle
-            mStudentBundle.putInt(STUDENT_POSITION, position);
-            mCallback.onSchoolSelected(Id, mStudentBundle);
-        }
 
-    }
-
-    interface Listener {
-        void onSchoolSelected(long courseId, Bundle data);
-        void onFragmentAttached(ListFragment fragment);
-        void onFragmentDetached(ListFragment fragment);
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        public void onFragmentInteraction(Uri uri);
     }
 
 
-
-    //Anonymous inner class to handle watching Uris
-    class DashboardObserver extends ContentObserver {
-        DashboardObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = getActivity().getContentResolver();
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateDashboard();
-        }
-    }
-
-    private final ContentObserver mObserver = new ContentObserver(new Handler()) {
-        @Override
-        public void onChange(boolean selfChange) {
-            if (!isAdded()) {
-                return;
-            }
-            getLoaderManager().restartLoader(0, null, DashboardFragment.this);
-        }
-    };
-
-    private void updateDashboard() {
-        // do work
-        try {
-            getLoaderManager().restartLoader(0, null, this);
-        } catch (Exception e) {
-            Log.e(TAG, "" + e);
-
-        }
-
-    }
 
 }

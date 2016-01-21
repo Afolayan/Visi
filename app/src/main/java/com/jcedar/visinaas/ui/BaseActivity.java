@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -147,11 +146,11 @@ public abstract class BaseActivity extends ActionBarActivity implements
         mHandler = new Handler();
 
         // set orientation for screen sizes
-        if (getResources().getConfiguration().smallestScreenWidthDp <= 600) {
+       /* if (getResources().getConfiguration().smallestScreenWidthDp <= 600) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
+        }*/
         if(!isFinishing()) {
             registerGCMClient();
         }
@@ -391,7 +390,7 @@ public abstract class BaseActivity extends ActionBarActivity implements
             } else if (getSelfNavDrawerItem() == NavigationDrawerFragment.MenuConstants.NAVDRAWER_ITEM_DASHBOARD) {
                 finish();
             } else {
-                startActivity(new Intent(this, Dashboard.class));
+                startActivity(new Intent(this, DashboardActivity.class));
                 finish();
             }
         }

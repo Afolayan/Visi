@@ -2,13 +2,12 @@ package com.jcedar.visinaas.ui;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -17,21 +16,22 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.jcedar.visinaas.R;
-import com.jcedar.visinaas.helper.UIUtils;
+import com.jcedar.visinaas.provider.DataContract;
 
 import java.util.ArrayList;
 
 public class StudentDetailsActivity extends BaseActivity
-        implements DashboardFragment.Listener, StudentDetailsFragment.DetailsListener{
+        implements StudentListFragment.Listener, StudentDetailsFragment.DetailsListener{
 
-    ViewPagerAdapter detailsAdapter;
-    StudentDetailsFragment mFragment = null;
+    //ViewPagerAdapter detailsAdapter;
+    StudentListFragment mFragment = null;
     private static final String TAG = StudentDetailsActivity.class.getSimpleName();
     public ArrayList<Long> mStudents;
     private ViewPager mPager;
     Uri mSelectedStudent;
     String phoneNumber, emailAddress, name;
 
+    boolean dualPanel;
     public static String ARG_STUDENT_LIST = "ARG_STUDENT_LIST";
 
     @Override
@@ -39,7 +39,32 @@ public class StudentDetailsActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_details);
 
-        if (findViewById(R.id.payItemDetailsPane) != null) {
+        dualPanel = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+
+        Intent intent = getIntent();
+        mSelectedStudent = intent.getData();
+        StudentDetailsFragment fragment = StudentDetailsFragment.newInstance(mSelectedStudent, this);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.details, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit();
+
+        if ( dualPanel ){
+            if (getResources().getConfiguration().smallestScreenWidthDp <= 600) {
+                mFragment =
+                        (StudentListFragment) getSupportFragmentManager()
+                                .findFragmentById(R.id.studentFrag);
+
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            } else {
+                mFragment =
+                        (StudentListFragment) getSupportFragmentManager()
+                                .findFragmentById(R.id.studentFrag);
+            }
+        }
+
+       /* if (findViewById(R.id.payItemDetailsPane) != null) {
             mFragment =
                     (StudentDetailsFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.studentDetailFrag);
@@ -76,7 +101,7 @@ public class StudentDetailsActivity extends BaseActivity
                 Long.parseLong(mSelectedStudent.getLastPathSegment()));
         mPager.setCurrentItem(selectedIndex);
 
-
+*/
         final Toolbar toolbar = getActionBarToolbar();
         if(toolbar == null) return;
         toolbar.setNavigationIcon(R.drawable.ic_up);
@@ -89,15 +114,12 @@ public class StudentDetailsActivity extends BaseActivity
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                toolbar.setTitle("Student Details");
+                toolbar.setTitle("Details");
             }
         });
 
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-
 
     }
 
@@ -132,26 +154,17 @@ public class StudentDetailsActivity extends BaseActivity
         return super.onOptionsItemSelected(item);
     }
     @Override
-    public void onSchoolSelected(long courseId, Bundle data) {
-        Log.d(TAG, courseId +" courseId");
-        mPager.setCurrentItem(mStudents.indexOf(courseId), true);
-    }
+    public void onSchoolSelected(long studentId) {
+        Log.d(TAG, studentId +" courseId");
+        /*mPager.setCurrentItem(mStudents.indexOf(courseId), true);*/
+        Uri uri = DataContract.StudentsChapter.buildStudentUri(studentId);
 
-    @Override
-    public void onFragmentAttached(ListFragment fragment) {
-
-    }
-
-    @Override
-    public void onFragmentDetached(ListFragment fragment) {
-
-    }
-
-    @Override
-    public void getUserData(String phoneNumber, String emailAddress, String name) {
-        setPhoneNumber(phoneNumber);
-        setEmailAddress(emailAddress);
-        setName(name);
+        StudentDetailsFragment fragment = StudentDetailsFragment.newInstance(uri, this);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.details, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -164,8 +177,14 @@ public class StudentDetailsActivity extends BaseActivity
 
     }
 
+    @Override
+    public void getUserData(String phoneNumber, String emailAddress, String name) {
+        setPhoneNumber(phoneNumber);
+        setEmailAddress(emailAddress);
+        setName(name);
+    }
 
-    private class ViewPagerAdapter extends FragmentStatePagerAdapter {
+ /*   private class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         private final int mSize;
 
@@ -184,7 +203,7 @@ public class StudentDetailsActivity extends BaseActivity
         public int getCount() {
             return mSize;
         }
-    }
+    }*/
 
 
     public String getEmailAddress() {

@@ -50,7 +50,6 @@
     <string name="nav_drawer_item_debit_batch_details">Debit Batch Details</string>
     <string name="nav_drawer_item_debit_batch">Debit Batch</string>
 
-    
 
     <string name="login_progress_signing_in">Signing in</string>
     <string name="prompt_email">Email</string>
@@ -58,8 +57,8 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="action_sign_in_register">Sign in</string>
     <string name="btn_continue">Continue</string>
- <string name="power_account_type">www.powercollectng.com</string>
-   <!--<string name="power_account_type">www.splasherstech.com</string>-->
+    <string name="power_account_type">www.powercollectng.com</string>
+    <!--<string name="power_account_type">www.splasherstech.com</string>-->
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -89,7 +88,7 @@
         Kindly hit the &quot;<b>Continue</b>&quot; button to download it from the Google Playstore - after which you may continue.
     ]]>
       </string>
-        <string name="power_services_uri"><![CDATA[<string name=\"power_services_uri\">com.splasherstech.authenticator</string>]]></string>
+    <string name="power_services_uri"><![CDATA[<string name=\"power_services_uri\">com.splasherstech.authenticator</string>]]></string>
 
     <string name="title_activity_account">Sign In</string>
     <string name="empty_accounts">No EBIPS accounts are available. Add an account to continue.</string>
@@ -113,7 +112,7 @@
     </string-array>
     <string name="title_activity_naccounts">Accounts</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="empty_result">Account not found</string>
     <string name="empty_batch_result">No result found</string>
@@ -132,7 +131,7 @@
     <string name="title_disco_remit_section">Disco</string>
     <string name="title_genco_remit_section">Genco</string>
     <string name="title_sp_remit_section">Provider</string>
-    <string name="title_activity_login">Login</string>
+    <string name="title_activity_login">Visibook</string>
     <string name="operation_timed_out">Operation timed out, kindly retry.</string>
     <string name="generic_error">Unable to get balances at this time.</string>
     <string name="server_error">Service unavailable</string>
@@ -204,4 +203,6 @@
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="call">Call</string>
     <string name="msg">Send Message</string>
+    <string name="title_activity_recycler">Recycler</string>
+    <string name="title_activity_details">Details</string>
 </resources>

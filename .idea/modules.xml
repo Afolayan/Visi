@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/VisiNaas.iml" filepath="$PROJECT_DIR$/VisiNaas.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Visi.iml" filepath="$PROJECT_DIR$/Visi.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/volley/volley.iml" filepath="$PROJECT_DIR$/app/volley/volley.iml" />
+      <module fileurl="file://$PROJECT_DIR$/volley/volley.iml" filepath="$PROJECT_DIR$/volley/volley.iml" />
     </modules>
   </component>
 </project>

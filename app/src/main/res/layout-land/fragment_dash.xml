@@ -37,7 +37,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/keyline_1"
                 android:layout_marginRight="@dimen/keyline_1"
-                android:layout_weight="66">
+                android:layout_weight="86">
                 <LinearLayout
                     android:id="@+id/layout"
                     android:layout_gravity="fill_vertical"
