@@ -22,11 +22,17 @@ import java.util.ArrayList;
 public class AppHelper  {
 
     private static final String TAG = AppHelper.class.getSimpleName();
-    public static void pullAndSaveAllStudentData(final Context context){
+
+    public static Context context;
+
+    public AppHelper(final Context context) {
+        this.context = context;
+    }
+
+    public void pullAndSaveAllStudentData(){
         new Thread(new Runnable() {
             public void run() {
                 try {
-
                     String response =  ServiceHandler.makeServiceCall
                             (AppSettings.SERVER_URL +"get_all_students.php", ServiceHandler.GET);
                     if(response == null){
@@ -51,7 +57,7 @@ public class AppHelper  {
 
     }
 
-    public static void pullAndSaveStudentChapterData(final Context context){
+    public void pullAndSaveStudentChapterData(){
         new Thread(new Runnable() {
             public void run() {
                 try {

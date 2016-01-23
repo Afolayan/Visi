@@ -20,17 +20,8 @@
             android:src="@drawable/power1"
             android:tint="@color/session_photo_scrim" /> -->
 
-        <com.jcedar.visinaas.ui.view.BezelImageView
-            android:id="@+id/profile_image1"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/power1"
-            android:layout_marginTop="20dp"
-             android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:layout_marginBottom="40dp"
-            app:maskDrawable="@drawable/circle_mask" />
+        <!--<ImageView-->
+
 
         <RelativeLayout
             android:id="@+id/chosen_account_content_view"
@@ -42,14 +33,24 @@
             android:paddingTop="@dimen/keyline_1"
             android:layout_gravity="center">
 
-           <!-- <com.jcedar.visinaas.ui.view.BezelImageView
+          <!-- <com.jcedar.visinaas.ui.view.BezelImageView
                 android:id="@+id/profile_image"
                 android:layout_width="@dimen/navdrawer_profile_image_size"
                 android:layout_height="@dimen/navdrawer_profile_image_size"
                 android:scaleType="centerCrop"
                 android:src="@drawable/person_image_empty"
                 app:maskDrawable="@drawable/circle_mask" />-->
-
+            <com.jcedar.visinaas.ui.view.BezelImageView
+                android:id="@+id/profile_image1"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/power1"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="40dp"
+                app:maskDrawable="@drawable/circle_mask"/>
             <TextView
                 android:id="@+id/profile_role_text"
                 android:layout_width="match_parent"

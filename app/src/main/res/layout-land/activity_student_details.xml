@@ -26,7 +26,7 @@
                 android:layout_margin="16dp"
                 android:background="@drawable/grey_frame_on_white">
 
-                <fragment android:name="com.jcedar.visinaas.ui.StudentDetailsFragment"
+                <fragment android:name="com.jcedar.visinaas.ui.StudentListFragment"
                     android:id="@+id/studentDetailFrag"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />

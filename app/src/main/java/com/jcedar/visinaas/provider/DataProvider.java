@@ -210,6 +210,13 @@ public class DataProvider extends ContentProvider {
                 final String id = uri.getLastPathSegment();
                 return builder.table(DatabaseHelper.Tables.STUDENTS)
                         .where(DataContract.Students._ID + "=?", id);
+            }case STUDENT_SEARCH: {
+                final String query = DataContract.Students.getSearchQuery(uri);
+                return builder.table(DatabaseHelper.Tables.STUDENT_SEARCH_JOIN)
+                        .mapToTable(DataContract.Students.NAME, DatabaseHelper.Tables.STUDENTS)
+                        .mapToTable(DataContract.Students._ID, DatabaseHelper.Tables.STUDENTS)
+                        .mapToTable(DataContract.StudentSearchColumns.CONTENT, DatabaseHelper.Tables.STUDENT_SEARCH)
+                        .where(DataContract.StudentSearchColumns.CONTENT + " MATCH ?", query);
             }
 
             case STUDENT_CHAPTER_LIST: {

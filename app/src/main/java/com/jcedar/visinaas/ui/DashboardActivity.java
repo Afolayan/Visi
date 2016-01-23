@@ -1,27 +1,35 @@
 package com.jcedar.visinaas.ui;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.facebook.AppEventsLogger;
 import com.jcedar.visinaas.R;
 import com.jcedar.visinaas.helper.AccountUtils;
+import com.jcedar.visinaas.helper.UIUtils;
 import com.jcedar.visinaas.provider.DataContract;
 import com.jcedar.visinaas.ui.view.SlidingTabLayout;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class DashboardActivity extends BaseActivity
@@ -32,6 +40,10 @@ public class DashboardActivity extends BaseActivity
     private  Context context = DashboardActivity.this;
     private Set<Fragment> mHomeFragments = new HashSet<>();
     private static final String TAG = DashboardActivity.class.getSimpleName();
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private SearchView searchView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,41 +56,49 @@ public class DashboardActivity extends BaseActivity
         toolbar.setCollapsible(true);
         DesignPagerAdapter adapter = new DesignPagerAdapter(getSupportFragmentManager());
         ViewPager viewPager = (ViewPager)findViewById(R.id.viewpager);
-        viewPager.setAdapter(adapter);
 
-        tabs = (SlidingTabLayout) findViewById(R.id.tabs);
-        tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
-        tabs.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
         Resources res = getResources();
-        tabs.setSelectedIndicatorColors(res.getColor(R.color.tab_selected_strip));
-        // Setting Custom Color for the Scroll bar indicator of the Tab View
-        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return getResources().getColor(R.color.theme_primary_light);
-            }
-        });
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setSelectedTabIndicatorColor(res.getColor(R.color.tab_selected_strip));
+        tabLayout.setupWithViewPager(viewPager);
+    }
 
-        tabs.setViewPager(viewPager);
+    public void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new StudentListFragment(), AccountUtils.getUserChapter(this));
+        adapter.addFragment(new AllStudentListFragment(), "ALL NAAS");
+        viewPager.setAdapter(adapter);
+    }
 
-        if (tabs != null) {
-            tabs.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset,
-                                           int positionOffsetPixels) {
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
 
-                }
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
 
-                @Override
-                public void onPageSelected(int position) {
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
 
-                }
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
 
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                    enableDisableSwipeRefresh(state == ViewPager.SCROLL_STATE_IDLE);
-                }
-            });
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
         }
     }
 
@@ -139,7 +159,18 @@ public class DashboardActivity extends BaseActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_dashboard, menu);
+        getMenuInflater().inflate(R.menu.menu_all_student_list, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        if (searchItem != null && UIUtils.hasHoneycomb()) {
+            Log.e(TAG, "going to search");
+            searchView = (SearchView) searchItem.getActionView();
+            if (searchView != null) {
+                SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+                searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+                searchView.setQueryRefinementEnabled(true);
+            }
+        }
         return true;
     }
 

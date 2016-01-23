@@ -13,13 +13,15 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.jcedar.visinaas.R;
-import com.jcedar.visinaas.adapter.SearchResultsCursorAdapter;
+import com.jcedar.visinaas.adapter.RecyclerCursorAdapterAll;
 import com.jcedar.visinaas.adapter.WrappingLinearLayoutManager;
 import com.jcedar.visinaas.io.adapters.StudentCursorAdapter;
 import com.jcedar.visinaas.provider.DataContract;
@@ -39,7 +41,6 @@ public class AllStudentListFragment extends Fragment implements LoaderManager.Lo
     private int mPosition;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
     private StudentCursorAdapter mAdapter;
     private SimpleSectionedListAdapter sSectionAdapter;
     private ListView listView;
@@ -50,7 +51,7 @@ public class AllStudentListFragment extends Fragment implements LoaderManager.Lo
     static String context;
 
     RecyclerView recyclerView;
-    SearchResultsCursorAdapter resultsCursorAdapter;
+    RecyclerCursorAdapterAll resultsCursorAdapter;
 
     public static AllStudentListFragment newInstance(int position) {
         AllStudentListFragment fragment = new AllStudentListFragment();
@@ -116,7 +117,7 @@ public class AllStudentListFragment extends Fragment implements LoaderManager.Lo
                     (ViewGroup) inflater.inflate(R.layout.fragment_home1, container, false);
         }
         recyclerView = (RecyclerView) rootView.findViewById( R.id.recyclerview );
-        resultsCursorAdapter = new SearchResultsCursorAdapter( getActivity() );
+        resultsCursorAdapter = new RecyclerCursorAdapterAll( getActivity() );
 
         recyclerView.setLayoutManager(new WrappingLinearLayoutManager(getContext()));
         recyclerView.setNestedScrollingEnabled(false);
@@ -124,7 +125,7 @@ public class AllStudentListFragment extends Fragment implements LoaderManager.Lo
         recyclerView.setAdapter(resultsCursorAdapter);
         tvError = (TextView) rootView.findViewById(R.id.tvErrorMag);
 
-        resultsCursorAdapter.setOnItemClickListener(new SearchResultsCursorAdapter.OnItemClickListener() {
+        resultsCursorAdapter.setOnItemClickListener(new RecyclerCursorAdapterAll.OnItemClickListener() {
             @Override
             public void onItemClicked(Cursor data) {
 
@@ -150,44 +151,14 @@ public class AllStudentListFragment extends Fragment implements LoaderManager.Lo
     }
 
 
-    private void getSOO(Cursor data){
-        String nameStr = data.getString(
-                data.getColumnIndexOrThrow(DataContract.StudentsChapter.NAME));
+    @Override
+    public void onOptionsMenuClosed(Menu menu) {
+        super.onOptionsMenuClosed(menu);
+    }
 
-        String genderStr = data.getString(
-                data.getColumnIndexOrThrow(DataContract.StudentsChapter.GENDER));
-
-
-        String chapter = data.getString(
-                data.getColumnIndexOrThrow(DataContract.StudentsChapter.CHAPTER));
-
-
-        String emailAdd = data.getString(
-                data.getColumnIndexOrThrow(DataContract.StudentsChapter.EMAIL));
-
-        String course = data.getString(
-                data.getColumnIndexOrThrow(DataContract.StudentsChapter.COURSE));
-
-
-        String phone = data.getString(
-                data.getColumnIndexOrThrow(DataContract.StudentsChapter.PHONE_NUMBER));
-
-        String dateOfBirth = data.getString(
-                data.getColumnIndexOrThrow(DataContract.StudentsChapter.DATE_OF_BIRTH));
-
-        Log.e(TAG, nameStr+" name "+chapter);
-
-        /*details.putString(DataContract.StudentsChapter.NAME, nameStr);
-        details.putString(DataContract.StudentsChapter.GENDER, genderStr);
-        details.putString(DataContract.StudentsChapter.CHAPTER, chapter);
-        details.putString(DataContract.StudentsChapter.EMAIL, emailAdd);
-        details.putString(DataContract.StudentsChapter.COURSE, course);
-        details.putString(DataContract.StudentsChapter.PHONE_NUMBER, phone);
-        details.putString(DataContract.StudentsChapter.DATE_OF_BIRTH, dateOfBirth);
-*/
-                /*Intent intent = new Intent(getActivity(), Details.class);
-                intent.putExtras(details);
-                startActivity( intent );*/
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -247,51 +218,6 @@ public class AllStudentListFragment extends Fragment implements LoaderManager.Lo
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         resultsCursorAdapter.swapCursor(data);
-
-        /*if( data.getCount() == 0) {
-            tvError.setVisibility(View.VISIBLE);
-            tvError.setText(  "No data yet");
-        }*/
-        /*
-        Bundle bundle = new Bundle();
-        int count = 0;
-        List<SimpleSectionedListAdapter.Section> sections =
-                new ArrayList<SimpleSectionedListAdapter.Section>();
-        String chapter, dummy="dummy";
-
-        if( data.moveToFirst() ) {
-            mAdapter.swapCursor(data);
-            mAdapter.notifyDataSetChanged();
-
-            data.moveToFirst();
-            while ( !data.isAfterLast()) {
-
-               chapter = data.getString( data.getColumnIndex( DataContract.Students.CHAPTER));
-
-                if( !chapter.equalsIgnoreCase(dummy)){
-                    sections.add( new SimpleSectionedListAdapter.Section( data.getPosition(),
-                            chapter));
-                }
-
-                dummy = chapter;
-
-                long studentId = data.getLong(
-                        data.getColumnIndexOrThrow(DataContract.Students._ID));
-                SimpleSectionedListAdapter.Section[] sectionArray =
-                        new SimpleSectionedListAdapter.Section[sections.size()];
-                sSectionAdapter.setSections(sections.toArray(sectionArray));
-                bundle.putLong(AllStudentDetailsActivity.ARG_ALL_LIST
-                        + Integer.toString(count++), studentId);
-                data.moveToNext();
-            }
-          this.mHomeBundle = bundle;
-        } else {
-            mAdapter.swapCursor(null);
-            tvError.setVisibility(View.VISIBLE);
-            tvError.setText("Error retrieving data ");
-
-        }*/
-
     }
 
     @Override
@@ -300,11 +226,22 @@ public class AllStudentListFragment extends Fragment implements LoaderManager.Lo
     }
 
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+    private void updateDashboard() {
+        // do work
+        try {
+            getLoaderManager().restartLoader(0, null, this);
+        } catch (Exception e) {
+            Log.e(TAG, "" + e);
+
+        }
+
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateDashboard();
+    }
 
 
 }

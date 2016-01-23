@@ -1,13 +1,19 @@
 package com.jcedar.visinaas.ui;
 
 import android.app.ProgressDialog;
+import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.OperationApplicationException;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -31,18 +37,22 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.jcedar.visinaas.R;
 import com.jcedar.visinaas.gcm.RegisterApp;
 import com.jcedar.visinaas.helper.AccountUtils;
-import com.jcedar.visinaas.helper.AppHelper;
 import com.jcedar.visinaas.helper.AppSettings;
 import com.jcedar.visinaas.helper.ServiceHandler;
 import com.jcedar.visinaas.helper.UIUtils;
+import com.jcedar.visinaas.io.jsonhandlers.StudentChapterHandler;
+import com.jcedar.visinaas.io.jsonhandlers.StudentHandler;
 import com.jcedar.visinaas.io.model.Student;
+import com.jcedar.visinaas.provider.DataContract;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
-import me.drakeet.materialdialog.MaterialDialog;
 
 public class FbActivity extends FragmentActivity {
 
@@ -55,6 +65,9 @@ public class FbActivity extends FragmentActivity {
     private Button checkEmail;
     GoogleCloudMessaging gcm;
     String regid;
+    ServiceHandler serviceHandler;
+    boolean hasGoneToFb = false;
+    Context context = FbActivity.this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +79,7 @@ public class FbActivity extends FragmentActivity {
         uiHelper = new UiLifecycleHelper(this, statusCallback);
         uiHelper.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fb);
+        serviceHandler = new ServiceHandler();
 
         try {
             //For key hashes
@@ -78,15 +92,31 @@ public class FbActivity extends FragmentActivity {
                 Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
             }
         }
-        catch (PackageManager.NameNotFoundException e) {
-
+        catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
+                e.printStackTrace();
         }
-        catch (NoSuchAlgorithmException e) {
 
-        }
+
         loginBtn = (LoginButton) findViewById(R.id.fb_login_button);
         loginBtn.setVisibility(View.INVISIBLE);
         checkEmail = (Button) findViewById( R.id.checkEmailButton);
+
+        checkEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText et = (EditText) findViewById(R.id.email);
+                String email = et.getText().toString().trim();
+                if (email.toLowerCase().contains("@") && UIUtils.isOnline(FbActivity.this)) {
+                    //check db
+                    Toast.makeText(FbActivity.this, "Verifying email, please wait", Toast.LENGTH_SHORT).show();
+                    new CheckUserEmail(email).execute();
+                } else {
+                    et.setError("Enter a valid email address");
+                }
+            }
+        });
+
+        if( UIUtils.isOnline( this )) {
 
             // do this if email is checked and found
             loginBtn.setReadPermissions(Arrays.asList("email"));
@@ -102,47 +132,91 @@ public class FbActivity extends FragmentActivity {
 
 
                         String photoUrl = "https://graph.facebook.com/" + graphUser.getId() + "/picture?type=large";
+                        hasGoneToFb = true;
                         try {
-                            Bitmap bb = new AccountUtils.LoadProfileImage().execute(photoUrl).get();
-                            //imageView.setImageBitmap(bb);
+                            LoadProfileImage ll = new LoadProfileImage();
+                            Bitmap bb = ll.execute(photoUrl).get();
                             UIUtils.setProfilePic(FbActivity.this, bb);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
+                        } catch (InterruptedException | ExecutionException e) {
                             e.printStackTrace();
                         }
-
-                        AppHelper.pullAndSaveStudentChapterData(FbActivity.this);
-                        AppHelper.pullAndSaveAllStudentData(FbActivity.this);
-
+                        GetAllData allData = new GetAllData();
+                        allData.execute();
                         startActivity(new Intent(FbActivity.this, DashboardActivity.class));
                         AccountUtils.setFirstRun(false, FbActivity.this);
                         FbActivity.this.finish();
-                        //imageView.setVisibility(View.VISIBLE);
-                    } else {
-                        //username.setText("You are not logged in");
-
                     }
+
+
                 }
             });
 
-            // get email and check db is true
+        }
 
-            checkEmail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    EditText et = (EditText) findViewById(R.id.email);
-                    String email = et.getText().toString().trim();
-                    if( email.toLowerCase().contains("@")){
-                        //check db
-                        new CheckUserEmail(email).execute();
-                    }else {
-                        et.setError("Enter a valid email address");
-                    }
+    }
+
+    public class GetAllData extends AsyncTask<Void, Void, Void> {
+
+        public GetAllData(){
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            String result="";
+            StudentHandler ss = new StudentHandler(context);
+            StudentChapterHandler ss1 = new StudentChapterHandler(context);
+            try {
+                String response =  ServiceHandler.makeServiceCall
+                        (AppSettings.SERVER_URL +"get_all_students.php", ServiceHandler.GET);
+                if(response == null){
+                    return null ;
                 }
-            });
+                Log.e(TAG, response + " response");
+
+                ArrayList<ContentProviderOperation> operations = ss.parse(response);
+                if (operations.size() > 0) {
+                    ContentResolver resolver = context.getContentResolver();
+                    resolver.applyBatch(DataContract.CONTENT_AUTHORITY, operations);
+                }
+            }catch (IOException | OperationApplicationException | RemoteException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                String chapter="";
+                if ( AccountUtils.getUserChapter(context) != null){
+                    chapter = AccountUtils.getUserChapter(context);
+                }
+                Log.e(TAG, "starting student chapter data response");
+                String response =  ServiceHandler.makeServiceCall
+                        (AppSettings.SERVER_URL +"getUsersChapter.php?chapter="+chapter, ServiceHandler.GET);
+                if(response == null){
+                    return null;
+                }
+                Log.e(TAG, response + " response");
+
+                ArrayList<ContentProviderOperation> operations =ss1.parse(response);
+                if (operations.size() > 0) {
+                    ContentResolver resolver = context.getContentResolver();
+                    resolver.applyBatch(DataContract.CONTENT_AUTHORITY, operations);
+
+                }
 
 
+            }catch (IOException | OperationApplicationException | RemoteException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
     }
 
     private Session.StatusCallback statusCallback = new Session.StatusCallback(){
@@ -164,9 +238,36 @@ public class FbActivity extends FragmentActivity {
         }
     };
 
+    public class LoadProfileImage extends AsyncTask<String, String, Bitmap> {
+        // ImageView downloadedImage;
+        Bitmap photoBitmap;
+
+        public LoadProfileImage() {
+            //this.downloadedImage = image;
+        }
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+            String url = urls[0];
+            Bitmap icon = null;
+            try {
+                InputStream in = new java.net.URL(url).openStream();
+                icon = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage() + "Hello world");
+                e.printStackTrace();
+            }
+            return icon;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            //downloadedImage.setImageBitmap(result);
+            photoBitmap = result;
+        }
+
+    }
+
     public class CheckUserEmail extends AsyncTask<Void, Void, String>{
         ProgressDialog dialog = new ProgressDialog(FbActivity.this);
-        MaterialDialog dialog1 = new MaterialDialog(FbActivity.this);
 
 
         String emailS ;
@@ -188,7 +289,7 @@ public class FbActivity extends FragmentActivity {
            String result="";
             try {
                 String url = AppSettings.SERVER_URL +"check_email.php?email="+emailS;
-                result =  ServiceHandler.makeServiceCall(url, ServiceHandler.GET);
+                result =  serviceHandler.makeServiceCall(url, ServiceHandler.GET);
                 Log.e(TAG, result +" json");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -201,7 +302,6 @@ public class FbActivity extends FragmentActivity {
             super.onPostExecute(s);
             if( dialog.isShowing())
                 dialog.dismiss();
-            //if ( isJSONValid(s) ){
             if ( s.equals("404")){
                 UIUtils.showAlert("Oops!!!", emailS+ " is not found in the database", FbActivity.this);
             } else if ( s.equals("101")){

@@ -314,7 +314,7 @@ public class AccountUtils {
     }
 
 
-    public static class LoadProfileImage extends AsyncTask<String, String, Bitmap> {
+    public class LoadProfileImage extends AsyncTask<String, String, Bitmap> {
         // ImageView downloadedImage;
         Bitmap photoBitmap;
 

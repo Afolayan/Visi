@@ -64,36 +64,11 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_server_down">Server down</string>
     <string name="error_field_required">This field is required</string>
-     <string name="description_sign_in_main">
-<![CDATA[
-        Welcome to the Power Collect app.
-        <br>
-        <br>
-        Press the &quot;Sign-in&quot; button to get started.
-    ]]>
-    </string>
-
-    <string name="description_choose_account">
-<![CDATA[
-        <font color="#4d90fe"><b>Choose an account below.</b></font>
-    ]]>
-    </string>
-    <string name="description_add_account">Add account</string>
-    <string name="description_power_serv_not_found">
-    <![CDATA[
-        Welcome to Power Collect Mobile.
-        <br>
-        <br>
-        We discovered you do not have PowerCollect  Services running or installed.
-        Kindly hit the &quot;<b>Continue</b>&quot; button to download it from the Google Playstore - after which you may continue.
-    ]]>
-      </string>
-    <string name="power_services_uri"><![CDATA[<string name=\"power_services_uri\">com.splasherstech.authenticator</string>]]></string>
 
     <string name="title_activity_account">Sign In</string>
     <string name="empty_accounts">No EBIPS accounts are available. Add an account to continue.</string>
     <string name="auth_name">POWER</string>
-    <string name="str_search_hint">search</string>
+    <string name="str_search_hint">Search</string>
     <string name="retry">Retry</string>
     <string name="taking_a_while">taking_a_while</string>
     <string name="role_MO">MO</string>
@@ -118,8 +93,8 @@
     <string name="empty_batch_result">No result found</string>
     <string name="empty_credit_advice_result">No credit advice found</string>
     <string name="empty_debit_advice_result">No debit advice found</string>
-    <string name="title_account_search_query">Search for \"&lt;b><xliff:g id="query">%1$s</xliff:g>&lt;b>\"</string>
-    <string name="title_search_query"><![CDATA[Search for \\\"&lt;b><xliff:g id=\"query\">%1$s</xliff:g>&lt;b>\\\"]]></string>
+    <string name="title_search_query">Search for \"&lt;b><xliff:g id="query">%1$s</xliff:g>&lt;b>\"</string>
+    <string name="title_search_query1"><![CDATA[Search for \\\"&lt;b><xliff:g id=\"query\">%1$s</xliff:g>&lt;b>\\\"]]></string>
     <string name="title_activity_fts">Search</string>
     <string name="title_activity_genco_debt_detail">Genco Debt Detail</string>
     <string name="title_activity_debt_detail">Debt Detail</string>
@@ -151,7 +126,7 @@
     <string name="powered">Powered by Venture Garden Group </string>
     <string name="developed">Developed by splashers Technologies </string>
     <string name="BDAWeblink">power.splasherstech.com</string>
-    <string name="developedlink">www.splasherstech.com</string>
+    <string name="developedlink">www.jcedar.com.ng</string>
     <string name="poweredlink">venturegardengroup.com</string>
     <string name="title_activity_debit_advice">Debit Advice</string>
     <string name="title_activity_credit_advice">CreditAdviceActivity</string>
@@ -205,4 +180,7 @@
     <string name="msg">Send Message</string>
     <string name="title_activity_recycler">Recycler</string>
     <string name="title_activity_details">Details</string>
+    <string name="version">Version</string>
+    <string name="developer">Developer</string>
+    <string name="designer">Designer</string>
 </resources>

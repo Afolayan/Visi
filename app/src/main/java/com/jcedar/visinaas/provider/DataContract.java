@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 
+import java.util.List;
+
 /**
  * Created by Onyecar on 2/26/2015.
  */
@@ -19,6 +21,7 @@ public class DataContract
     //Paths
 
     public static final String PATH_STUDENTS = "students";
+    public static final String PATH_SEARCH = "search";
     public static final String PATH_STUDENTS_CHAPTER = "students_chapter";
 
 
@@ -56,6 +59,19 @@ public class DataContract
 
         /** The default sort order for queries containing students */
         public static final String SORT_ORDER_DEFAULT = CHAPTER +" ASC";
+
+        public static Uri buildSearchUri(String query) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_SEARCH).appendPath(query).build();
+        }
+
+        public static boolean isSearchUri(Uri uri) {
+            List<String> pathSegments = uri.getPathSegments();
+            return pathSegments.size() >= 2 && PATH_SEARCH.equals(pathSegments.get(1));
+        }
+
+        public static String getSearchQuery(Uri uri) {
+            return uri.getPathSegments().get(2);
+        }
     }
 
     public static class StudentsChapter implements StudentChapterColumns, BaseColumns, SyncColumns{
@@ -116,7 +132,10 @@ public class DataContract
         String DATE_OF_BIRTH = "date_of_birth";
         String DOB_NUMBER = "dob_number";
     }
-
+    interface StudentSearchColumns {
+        String SEARCH_STUDENT_ID = "student_id";
+        String CONTENT = "content";
+    }
 
     public static Uri addCallerIsSyncAdapterParameter(Uri uri) {
         return uri.buildUpon().appendQueryParameter(

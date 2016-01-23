@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
@@ -72,6 +74,15 @@ public class UIUtils {
             }
         }).show();
 
+    }
+    public static boolean hasHoneycomb() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
+    }
+    public static boolean isOnline(Context mContext) {
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(
+                Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null &&
+                cm.getActiveNetworkInfo().isConnected();
     }
 
     /**

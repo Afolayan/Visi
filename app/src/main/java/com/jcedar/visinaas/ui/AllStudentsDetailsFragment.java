@@ -31,7 +31,7 @@ import com.jcedar.visinaas.provider.DataContract;
 public class AllStudentsDetailsFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener{
 
-    private static final String ARGS_ALL_STUDENT_ID = "all_student_id";
+    public static final String ARGS_ALL_STUDENT_ID = "all_student_id";
     private static final String ARG_PARAM1 = "param1";
     private static final String TAG = AllStudentsDetailsFragment.class.getSimpleName();
     private Handler handler;

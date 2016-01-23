@@ -78,6 +78,7 @@ public class NavigationDrawerFragment extends Fragment {
     private NavDrawerAdapter mNavDrawerAdapter;
     private int lastItemChecked;
     private Handler mHandler;
+    //private ImageView imageView;
     private BezelImageView imageView;
     private TextView profileText;
 
@@ -117,6 +118,7 @@ public class NavigationDrawerFragment extends Fragment {
         ViewGroup root = (ViewGroup) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         mDrawerListView = (ListView) root.findViewById(R.id.drawer_listview);
+        //imageView = (ImageView) root.findViewById(R.id.profile_image1);
         imageView = (BezelImageView) root.findViewById(R.id.profile_image1);
         profileText = (TextView) root.findViewById(R.id.profile_name_text);
 
@@ -250,7 +252,7 @@ public class NavigationDrawerFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mCallbacks = (NavigationDrawerCallbacks) activity;
+            //mCallbacks = (NavigationDrawerCallbacks) activity;
         } catch (ClassCastException e) {
             //throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
         }
@@ -351,7 +353,13 @@ public class NavigationDrawerFragment extends Fragment {
                 getActivity().finish();
                 break;
             case MenuConstants.NAVDRAWER_ITEM_ONE_PARTICIPANT:
-                intent = new Intent(getActivity(), RecyclerActivity.class);
+                intent = new Intent(getActivity(), SearchActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+                break;
+
+            case MenuConstants.NAVDRAWER_ITEM_SETTINGS:
+                intent = new Intent(getActivity(), Settings.class);
                 startActivity(intent);
                 getActivity().finish();
                 break;

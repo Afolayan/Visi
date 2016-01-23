@@ -31,7 +31,6 @@ public class AllStudentDetailsActivity extends BaseActivity
     Uri mSelectedStudent;
     private boolean dualPanel;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,46 +60,6 @@ public class AllStudentDetailsActivity extends BaseActivity
                                 .findFragmentById(R.id.studentFrag);
             }
         }
-   /*     if (findViewById(R.id.installmentDetailsPane) != null) {
-            mHomeFragment =
-                    (AllStudentListFragment) getSupportFragmentManager()
-                            .findFragmentById(R.id.studentFrag);
-
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }*/
-
-/*
-
-        Intent intent = getIntent();
-        if(intent != null){
-            mSelectedStudent = intent.getData();
-            if( mSelectedStudent == null ) {
-                return;
-            }
-            Bundle installmentBundle = intent.getBundleExtra(ARG_ALL_LIST);
-
-
-            if(installmentBundle != null){
-                mStudents = convertToArray(installmentBundle, ARG_ALL_LIST);
-                Log.d(TAG, "Installment bundle is not null: ");
-                       // + UIUtils.bundle2string(installmentBundle));
-            }else {
-                Log.d(TAG, "Installment Bundle is null");
-            }
-        }
-
-        mPagerAdapter = new AllStudentPagerAdapter(getSupportFragmentManager(),
-                mStudents.size());
-        mPager = (ViewPager) findViewById(R.id.pager2);
-        mPager.setAdapter(mPagerAdapter);
-
-        int selectedIndex = mStudents.indexOf(
-                Long.parseLong(mSelectedStudent.getLastPathSegment()));
-        mPager.setCurrentItem(selectedIndex);
-*/
-
 
         final Toolbar toolbar = getActionBarToolbar();
         if(toolbar == null) return;
@@ -127,6 +86,7 @@ public class AllStudentDetailsActivity extends BaseActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_all_student_details, menu);
+
         return true;
     }
 

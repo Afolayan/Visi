@@ -4,11 +4,14 @@
     android:orientation="vertical"
     >
 
-    <include layout="@layout/general_toolbar"/>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/com_facebook_button_like_selected"
+    <include layout="@layout/general_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"/>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/grey_frame_on_white"
     >
 
     <LinearLayout
@@ -30,7 +33,7 @@
                 android:layout_width="98dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/person_image_empty"
-                android:contentDescription="Seyi">
+                android:contentDescription="User Photo">
 
             </ImageView>
 
@@ -47,8 +50,8 @@
                     android:layout_weight="1"
                     android:text="Afolayan Oluwaseyi"
                     android:textSize="@dimen/abc_text_size_medium_material"
-                    android:textColor="@color/butter_bar_light"
-                    android:textStyle="bold"></TextView>
+                    android:textColor="@color/black_semi_transparent"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tvChapter"
@@ -56,8 +59,8 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:text="someone@oman.com"
-                    android:textColor="@color/butter_bar_light"
-                    android:textSize="14sp"></TextView>
+                    android:textColor="@color/black_semi_transparent"
+                    android:textSize="14sp"/>
 
                 <TextView
                     android:id="@+id/tvGender"
@@ -66,7 +69,7 @@
                     android:layout_weight="1"
                     android:text="Male"
                     android:textSize="14sp"
-                    android:textColor="@color/butter_bar_light"
+                    android:textColor="@color/black_semi_transparent"
                     />
 
                 <TextView
@@ -75,8 +78,8 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:text="Computer Engineering"
-                    android:textColor="@color/butter_bar_light"
-                    android:textSize="14sp"></TextView>
+                    android:textColor="@color/black_semi_transparent"
+                    android:textSize="14sp"/>
 
             </LinearLayout>
 

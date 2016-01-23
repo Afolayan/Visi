@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<searchable xmlns:android="http://schemas.android.com/apk/res/android"
+    android:label="@string/str_search_hint"
+    android:hint="@string/str_search_hint"
+    android:includeInGlobalSearch="true"
+    android:queryAfterZeroResults="true"
+    android:searchMode="queryRewriteFromText"
+    android:voiceSearchMode="showVoiceSearchButton|launchRecognizer"
+    android:searchSettingsDescription="@string/str_search_hint"
+    android:searchSuggestAuthority="com.jcedar.visinaas.provider.SuggestionProvider"
+    android:searchSuggestSelection=" ?"
+    android:searchSuggestIntentAction="android.provider.Contacts.SEARCH_SUGGESTION_CLICKED"
+    android:searchSuggestIntentData="content://com.jcedar.visinaas.provider/students" >
+
+    <actionkey
+        android:keycode="KEYCODE_ENTER"
+        android:queryActionMsg="search"
+        android:suggestActionMsg="search" />
+
+</searchable>

@@ -15,13 +15,13 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class SearchResultsCursorAdapter extends RecyclerViewCursorAdapter<SearchResultsCursorAdapter.SearchResultViewHolder>
+public class RecyclerCursorAdapter extends RecyclerViewCursorAdapter<RecyclerCursorAdapter.SearchResultViewHolder>
         implements View.OnClickListener
 {
     private final LayoutInflater layoutInflater;
     private OnItemClickListener onItemClickListener;
 
-    public SearchResultsCursorAdapter(final Context context)
+    public RecyclerCursorAdapter(final Context context)
     {
         super();
 

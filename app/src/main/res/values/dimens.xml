@@ -67,6 +67,7 @@
     <dimen name="size20">20dp</dimen>
     <dimen name="size15">15dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="multipane_half_padding">16dp</dimen>
 
 
 </resources>

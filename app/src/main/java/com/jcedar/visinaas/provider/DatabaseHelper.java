@@ -92,7 +92,25 @@ public class DatabaseHelper extends SQLiteOpenHelper
             + DataContract.StudentsChapter.UPDATED + " LONG DEFAULT 0 )";
 
 
+    final static String SQL_CREATE_STUDENTS_SEARCH_TABLE = "CREATE VIRTUAL TABLE "
+            + Tables.STUDENT_SEARCH + " USING fts3("
+            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + DataContract.StudentSearchColumns.CONTENT + " TEXT NOT NULL,"
+            + DataContract.StudentSearchColumns.SEARCH_STUDENT_ID + " VARCHAR NOT NULL,"
+            + "tokenize=simple)";
 
+    final static String SQL_UPDATE_SEARCH_TABLE = "INSERT INTO " + Tables.STUDENT_SEARCH
+            + "(" + DataContract.StudentSearchColumns.SEARCH_STUDENT_ID + ","
+            + DataContract.StudentSearchColumns.CONTENT + ")"
+
+            + " SELECT " + DataContract.Students._ID + ", ("
+            + DataContract.Students.NAME + "||'; '||"
+            + DataContract.Students.CHAPTER + "||'; '||"
+            + DataContract.Students.COURSE + "||'; '||"
+            + DataContract.Students.EMAIL + "||'; '||"
+            + DataContract.Students.PHONE_NUMBER + ")"
+
+            + " FROM " + Tables.STUDENTS;
     public static void deleteDatabase(Context context) {
         context.deleteDatabase(DATABASE_NAME);
     }
@@ -101,9 +119,18 @@ public class DatabaseHelper extends SQLiteOpenHelper
     private void upgradeDb(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
     }
 
+    public static void updateSearchIndex(SQLiteDatabase db) {
+        db.execSQL("DELETE FROM " + Tables.STUDENT_SEARCH);
+        db.execSQL(SQL_UPDATE_SEARCH_TABLE);
+        Log.d(TAG, "Search table updating");
+    }
     interface Tables {
         String STUDENTS = "students";
+        String STUDENT_SEARCH = "student_search";
         String STUDENTS_CHAPTER = "students_chapter";
+
+        String STUDENT_SEARCH_JOIN = "students "
+                + "INNER JOIN student_search ON students._id=student_search.student_id";
 
     }
 

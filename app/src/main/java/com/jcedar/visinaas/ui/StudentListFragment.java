@@ -1,9 +1,9 @@
 package com.jcedar.visinaas.ui;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.jcedar.visinaas.R;
-import com.jcedar.visinaas.adapter.SearchResultsCursorAdapter;
+import com.jcedar.visinaas.adapter.RecyclerCursorAdapter;
 import com.jcedar.visinaas.adapter.WrappingLinearLayoutManager;
 import com.jcedar.visinaas.io.adapters.StudentCursorAdapter;
 import com.jcedar.visinaas.provider.DataContract;
@@ -44,7 +44,7 @@ public class StudentListFragment extends Fragment implements LoaderManager.Loade
     private Listener mCallback;
     private String context;
     RecyclerView recyclerView;
-    SearchResultsCursorAdapter resultsCursorAdapter;
+    RecyclerCursorAdapter resultsCursorAdapter;
 
 
     public static StudentListFragment newInstance(int position) {
@@ -112,15 +112,16 @@ public class StudentListFragment extends Fragment implements LoaderManager.Loade
         }
         tvError = (TextView) rootView.findViewById(R.id.tvErrorMag);
         recyclerView = (RecyclerView) rootView.findViewById( R.id.recyclerview );
-        resultsCursorAdapter = new SearchResultsCursorAdapter( getActivity() );
+        resultsCursorAdapter = new RecyclerCursorAdapter( getActivity() );
 
         recyclerView.setLayoutManager(new WrappingLinearLayoutManager(getContext()));
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setHasFixedSize(false);
         recyclerView.setAdapter(resultsCursorAdapter);
+        recyclerView.addItemDecoration( new VerticalSpaceItemDecoration(3) );
         tvError = (TextView) rootView.findViewById(R.id.tvErrorMag);
 
-        resultsCursorAdapter.setOnItemClickListener(new SearchResultsCursorAdapter.OnItemClickListener() {
+        resultsCursorAdapter.setOnItemClickListener(new RecyclerCursorAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(Cursor data) {
 
@@ -137,10 +138,20 @@ public class StudentListFragment extends Fragment implements LoaderManager.Loade
         return rootView;
     }
 
-    public ListView getListView() {
-        return listView;
-    }
+    public class VerticalSpaceItemDecoration extends RecyclerView.ItemDecoration {
 
+        private final int mVerticalSpaceHeight;
+
+        public VerticalSpaceItemDecoration(int mVerticalSpaceHeight) {
+            this.mVerticalSpaceHeight = mVerticalSpaceHeight;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+                                   RecyclerView.State state) {
+            outRect.bottom = mVerticalSpaceHeight;
+        }
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -150,14 +161,12 @@ public class StudentListFragment extends Fragment implements LoaderManager.Loade
             mCallback.onFragmentAttached(this);
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement Listener");
         }
 
-        DashboardObserver observer = new DashboardObserver(new Handler());
-        // start watching for changes
-        observer.observe();
+        activity.getContentResolver().registerContentObserver(
+                DataContract.StudentsChapter.CONTENT_URI, true, mObserver);
 
-        // where we do our work
         updateDashboard();
     }
 
@@ -246,23 +255,6 @@ public class StudentListFragment extends Fragment implements LoaderManager.Loade
     }
 
 
-
-    //Anonymous inner class to handle watching Uris
-    class DashboardObserver extends ContentObserver {
-        DashboardObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = getActivity().getContentResolver();
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateDashboard();
-        }
-    }
-
     private final ContentObserver mObserver = new ContentObserver(new Handler()) {
         @Override
         public void onChange(boolean selfChange) {
@@ -284,4 +276,9 @@ public class StudentListFragment extends Fragment implements LoaderManager.Loade
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateDashboard();
+    }
 }
