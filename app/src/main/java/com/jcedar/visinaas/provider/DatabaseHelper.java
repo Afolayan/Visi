@@ -1,19 +1,13 @@
 package com.jcedar.visinaas.provider;
 
-import android.accounts.Account;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.util.Log;
-
-import com.jcedar.visinaas.helper.AccountUtils;
-import com.jcedar.visinaas.helper.AppSettings;
 
 import java.util.ArrayList;
 
@@ -35,12 +29,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_STUDENT_TABLE);
         db.execSQL(SQL_CREATE_STUDENTS_CHAPTER_TABLE);
+        db.execSQL(SQL_CREATE_STUDENTS_SEARCH_TABLE);
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Cancel all current or pending syncs
+       /* // Cancel all current or pending syncs
         Account account = AccountUtils.getChosenAccount(mContext);
         if (account != null) {
             ContentResolver.cancelSync(account, AppSettings.PROVIDER_AUTHORITY);
@@ -55,7 +50,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
             settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
             Log.i(TAG, "DB upgrade complete requesting resync");
             ContentResolver.requestSync(account, AppSettings.PROVIDER_AUTHORITY, settingsBundle);
-        }
+        }*/
+        Log.e(TAG, "Upgrading database from version " + oldVersion + " to "
+                + newVersion + ", which will destroy all old data");
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.STUDENT_SEARCH);
+        onCreate(db);
     }
 
 //    public static void updateMonthlySummary(SQLiteDatabase db) {
@@ -94,8 +93,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     final static String SQL_CREATE_STUDENTS_SEARCH_TABLE = "CREATE VIRTUAL TABLE "
             + Tables.STUDENT_SEARCH + " USING fts3("
-            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + DataContract.StudentSearchColumns.CONTENT + " TEXT NOT NULL,"
+            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + DataContract.StudentSearchColumns.CONTENT + " TEXT NOT NULL, "
             + DataContract.StudentSearchColumns.SEARCH_STUDENT_ID + " VARCHAR NOT NULL,"
             + "tokenize=simple)";
 
@@ -124,22 +123,58 @@ public class DatabaseHelper extends SQLiteOpenHelper
         db.execSQL(SQL_UPDATE_SEARCH_TABLE);
         Log.d(TAG, "Search table updating");
     }
+
+
     interface Tables {
         String STUDENTS = "students";
         String STUDENT_SEARCH = "student_search";
         String STUDENTS_CHAPTER = "students_chapter";
 
-        String STUDENT_SEARCH_JOIN = "students "
-                + "INNER JOIN student_search ON students._id=student_search.student_id";
+        String STUDENT_SEARCH_JOIN = Tables.STUDENTS
+                + " INNER JOIN "+Tables.STUDENT_SEARCH+" ON "
+                + Tables.STUDENTS+"."+DataContract.Students._ID +"="
+                + Tables.STUDENT_SEARCH+"."+DataContract.StudentSearchColumns.SEARCH_STUDENT_ID;
+
 
     }
 
     public static void rebuildDashbaord(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + Tables.STUDENTS);
         db.execSQL("DROP TABLE IF EXISTS " + Tables.STUDENTS_CHAPTER);
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.STUDENT_SEARCH);
+
+        /*db.execSQL(SQL_CREATE_STUDENT_TABLE);
+        db.execSQL(SQL_CREATE_STUDENTS_CHAPTER_TABLE);
+        db.execSQL(SQL_CREATE_STUDENTS_SEARCH_TABLE);*/
 
     }
 
+    public Cursor getSearch(String query){
+        Cursor c = mContext.getContentResolver().query(
+                DataContract.Students.CONTENT_URI,
+                DataContract.Students.PROJECTION_ALL,
+                DataContract.Students.NAME +" LIKE ? ",
+                new String[]{query},
+                DataContract.Students._ID +" ASC"
+                );
+        /*
+        * Cursor c = mContext.getContentResolver().query(
+                DataContract.Students.CONTENT_URI,
+                DataContract.Students.PROJECTION_ALL,
+                DataContract.Students.NAME +" LIKE ? OR "
+                        +DataContract.Students.PHONE_NUMBER +" LIKE ? OR "
+                        +DataContract.Students.EMAIL +" LIKE ? OR "
+                        +DataContract.Students.GENDER +" LIKE ? OR "
+                        +DataContract.Students.COURSE +" LIKE ? OR "
+                        +DataContract.Students.CHAPTER +" LIKE ? ",
+                new String[]{"%"+query+"%", "%"+query+"%", "%"+query+"%",
+                        "%"+query+"%", "%"+query+"%", "%"+query+"%"},
+                DataContract.Students.SORT_ORDER_DEFAULT
+                );
+                */
+
+        return c;
+    }
 
 
     public ArrayList<Cursor> getData(String Query){
@@ -148,7 +183,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         String[] columns = new String[] { "mesage" };
         //an array list of cursor to save two cursors one has results from the query
         //other cursor stores error message if any errors are triggered
-        ArrayList<Cursor> alc = new ArrayList<Cursor>(2);
+        ArrayList<Cursor> alc = new ArrayList<>(2);
         MatrixCursor Cursor2= new MatrixCursor(columns);
         alc.add(null);
         alc.add(null);

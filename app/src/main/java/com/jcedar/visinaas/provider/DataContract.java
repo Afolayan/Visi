@@ -70,7 +70,7 @@ public class DataContract
         }
 
         public static String getSearchQuery(Uri uri) {
-            return uri.getPathSegments().get(2);
+            return uri.getLastPathSegment();
         }
     }
 

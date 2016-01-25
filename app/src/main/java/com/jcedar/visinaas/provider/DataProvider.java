@@ -1,6 +1,7 @@
 package com.jcedar.visinaas.provider;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -38,7 +39,7 @@ public class DataProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
 
-        Log.v(TAG, "delete(uri=" + uri + ", values=" + selectionArgs + ")");
+        Log.v(TAG, "delete(uri=" + uri + ", values=" + Arrays.toString(selectionArgs) + ")");
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
         // TODO: Handle signOut
@@ -87,7 +88,7 @@ public class DataProvider extends ContentProvider {
         Log.v(TAG, "insert(uri=" + uri + ")");
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
-        long id = 0;
+        long id;
         boolean syncToNetwork = DataContract.hasCallerIsSyncAdapterParameter(uri);
         switch (match) {
             case STUDENT_LIST: {
@@ -112,7 +113,7 @@ public class DataProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
 
-        mOpenHelper = new com.jcedar.visinaas.provider.DatabaseHelper(getContext());
+        mOpenHelper = new DatabaseHelper(getContext());
         return true;
     }
 
@@ -152,8 +153,8 @@ public class DataProvider extends ContentProvider {
         Log.d(TAG, "uri and match in update : " + uri + "match" + match);
         if (match == SEARCH_INDEX) {
             // update the search index
-            Log.d(TAG, "calling updateAccountSearchIndex ");
-            //DatabaseHelper.updateAccountSearchIndex(db);
+            Log.d(TAG, "calling updateSearchIndex ");
+            DatabaseHelper.updateSearchIndex(db);
             return 1;
         }
 
@@ -192,7 +193,10 @@ public class DataProvider extends ContentProvider {
 
     private void notifyChange(Uri uri, boolean syncToNetwork) {
         Context context = getContext();
-        context.getContentResolver().notifyChange(uri, null, syncToNetwork);
+        if( context != null) {
+            ContentResolver resolver = context.getContentResolver();
+            resolver.notifyChange(uri, null, syncToNetwork);
+        }
 
         // Widgets can't register content observers so we refresh widgets separately.
         // context.sendBroadcast(ScheduleWidgetProvider.getRefreshBroadcastIntent(context, false));
@@ -210,7 +214,8 @@ public class DataProvider extends ContentProvider {
                 final String id = uri.getLastPathSegment();
                 return builder.table(DatabaseHelper.Tables.STUDENTS)
                         .where(DataContract.Students._ID + "=?", id);
-            }case STUDENT_SEARCH: {
+            }
+            case STUDENT_SEARCH: {
                 final String query = DataContract.Students.getSearchQuery(uri);
                 return builder.table(DatabaseHelper.Tables.STUDENT_SEARCH_JOIN)
                         .mapToTable(DataContract.Students.NAME, DatabaseHelper.Tables.STUDENTS)

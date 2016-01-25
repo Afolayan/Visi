@@ -3,6 +3,7 @@ package com.jcedar.visinaas.ui;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.SearchRecentSuggestions;
@@ -13,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.jcedar.visinaas.R;
@@ -27,7 +29,7 @@ public class SearchActivity extends BaseActivity
     RecyclerView recyclerView;
     RecyclerCursorAdapter resultsCursorAdapter;
     private boolean mTwoPane = false;
-    private SearchFragment mFtsFragment;
+    private SearchFragment mSearchFragment;
     private SlidingPaneLayout mSlidingLayout;
     private String mQuery;
     private long mSelectedStudent;
@@ -46,12 +48,12 @@ public class SearchActivity extends BaseActivity
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        mFtsFragment = (SearchFragment) fragmentManager.findFragmentById(
+        mSearchFragment = (SearchFragment) fragmentManager.findFragmentById(
                 R.id.fragment_container_master);
-        if (mFtsFragment == null) {
-            mFtsFragment = new SearchFragment();
+        if (mSearchFragment == null) {
+            mSearchFragment = new SearchFragment();
             fragmentManager.beginTransaction()
-                    .add(R.id.fragment_container_master, mFtsFragment)
+                    .add(R.id.fragment_container_master, mSearchFragment)
                     .commit();
         }
 
@@ -73,6 +75,7 @@ public class SearchActivity extends BaseActivity
             });
 
         }
+        onNewIntent(getIntent());
     }
 
     @Override
@@ -88,6 +91,7 @@ public class SearchActivity extends BaseActivity
         String query = intent.getStringExtra(SearchManager.QUERY);
         mQuery = query;
         setTitle(Html.fromHtml(getString(R.string.title_search_query, query)));
+        Log.e(TAG, mQuery+" query");
 
         //save query
         SearchRecentSuggestions suggestions =
@@ -99,7 +103,10 @@ public class SearchActivity extends BaseActivity
         Intent modernIntent
                 = new Intent(Intent.ACTION_VIEW, DataContract.Students.buildSearchUri(query));
         Bundle arguments = intentToFragmentArguments(modernIntent);
-        mFtsFragment.reloadFromArguments(arguments);
+        Uri uri = modernIntent.getData();
+        Log.e(TAG, uri.toString() + " uri");
+
+        mSearchFragment.reloadFromArguments(uri, mQuery);
 
         //close
         if (!mTwoPane) {
@@ -121,8 +128,8 @@ public class SearchActivity extends BaseActivity
             return;
         }
 
-        //NNInvoiceDetailFragment detailFragment = new NNInvoiceDetailFragment();
-        AllStudentsDetailsFragment detailFragment = new AllStudentsDetailsFragment();
+        AllStudentsDetailsFragment detailFragment
+                = AllStudentsDetailsFragment.newInstance(id);
         Bundle argument = new Bundle();
 
         argument.putLong(AllStudentsDetailsFragment.ARGS_ALL_STUDENT_ID, id);
@@ -196,4 +203,5 @@ public class SearchActivity extends BaseActivity
             //setTitle(Html.fromHtml(getString(R.string.title_search_query, mQuery)));
         }
     }
+
 }

@@ -279,6 +279,6 @@ public class StudentListFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onResume() {
         super.onResume();
-        updateDashboard();
+        //updateDashboard();
     }
 }

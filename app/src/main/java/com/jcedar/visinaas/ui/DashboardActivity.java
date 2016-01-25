@@ -16,14 +16,12 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.facebook.AppEventsLogger;
 import com.jcedar.visinaas.R;
 import com.jcedar.visinaas.helper.AccountUtils;
-import com.jcedar.visinaas.helper.UIUtils;
 import com.jcedar.visinaas.provider.DataContract;
 import com.jcedar.visinaas.ui.view.SlidingTabLayout;
 
@@ -51,11 +49,11 @@ public class DashboardActivity extends BaseActivity
         setContentView(R.layout.activity_dashboard);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("NAAS Western Nigeria");
+        toolbar.setTitle("NAAS WNUC");
         setSupportActionBar(toolbar);
         toolbar.setCollapsible(true);
         DesignPagerAdapter adapter = new DesignPagerAdapter(getSupportFragmentManager());
-        ViewPager viewPager = (ViewPager)findViewById(R.id.viewpager);
+       // ViewPager viewPager = (ViewPager)findViewById(R.id.viewpager);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -162,8 +160,7 @@ public class DashboardActivity extends BaseActivity
         getMenuInflater().inflate(R.menu.menu_all_student_list, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        if (searchItem != null && UIUtils.hasHoneycomb()) {
-            Log.e(TAG, "going to search");
+        if (searchItem != null) {
             searchView = (SearchView) searchItem.getActionView();
             if (searchView != null) {
                 SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
@@ -176,12 +173,8 @@ public class DashboardActivity extends BaseActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }

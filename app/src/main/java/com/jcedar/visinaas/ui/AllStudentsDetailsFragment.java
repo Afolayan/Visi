@@ -1,6 +1,5 @@
 package com.jcedar.visinaas.ui;
 
-import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -12,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -65,15 +65,14 @@ public class AllStudentsDetailsFragment extends Fragment
         AllStudentsDetailsFragment fragment = new AllStudentsDetailsFragment();
         Log.e(TAG, uri+" uri");
         dataUri = uri;
-        Log.e(TAG, dataUri+" data uri");
         return fragment;
     }
 
-    public static Fragment newInstance(String studentId, String something) {
+    public static AllStudentsDetailsFragment newInstance(long studentId) {
         AllStudentsDetailsFragment fragment = new AllStudentsDetailsFragment();
-        Bundle args = new Bundle();
-        args.putLong(ARG_PARAM1, Long.parseLong(studentId));
-        fragment.setArguments(args);
+
+        dataUri = DataContract.Students.buildStudentUri(studentId );
+        Log.e(TAG, dataUri+" uri inside search");
         return fragment;
     }
 
@@ -112,7 +111,12 @@ public class AllStudentsDetailsFragment extends Fragment
                 }
             });
         }
-        activityToolbar = ((AllStudentDetailsActivity) getActivity()).getActionBarToolbar();
+        String context = getActivity().getClass().getSimpleName();
+        if ( context.equals("AllStudentDetailsActivity"))
+            activityToolbar = ((AllStudentDetailsActivity) getActivity()).getActionBarToolbar();
+        else {
+            activityToolbar = ((SearchActivity) getActivity()).getActionBarToolbar();
+        }
 
 
         imgSendEmail = (ImageView) rootView.findViewById(R.id.send_email);

@@ -43,17 +43,39 @@
             android:authorities="com.jcedar.visinaas.provider"
             android:exported="false"
             android:syncable="true" />
+        <provider
+            android:authorities="com.jcedar.visinaas.provider.SuggestionProvider"
+            android:name=".provider.SuggestionProvider"/>
 
         <activity
             android:name=".ui.DashboardActivity"
+            android:exported="true"
             android:label="@string/app_name" >
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".ui." />
+                android:value=".ui.SearchActivity" />
             </activity>
+
+        <activity
+            android:name=".ui.SearchActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.DashboardActivity" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
+        </activity>
+
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/title_activity_main" />
@@ -117,24 +139,12 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
-                <category android:name="com.programmingtechniques.gcmdemo" />
+                <category android:name="com.jcedar.visinaas" />
             </intent-filter>
         </receiver>
 
         <service android:name=".gcm.GcmIntentServices" />
 
-        <activity
-            android:name=".ui.SearchActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Gardener"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
-
-        </activity>
         <activity
             android:name=".ui.Details"
             android:label="@string/title_activity_details"
@@ -152,10 +162,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.DashboardActivity" />
             </activity>
-                <activity
+                <!--<activity
             android:name=".ui.Preference"
             android:label="@string/title_activity_preference"
-            android:theme="@style/Theme.Gardener"/>
+            android:theme="@style/Theme.Gardener"/>-->
     </application>
 
 </manifest>

@@ -1,27 +1,26 @@
 package com.jcedar.visinaas.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.jcedar.visinaas.R;
-import com.jcedar.visinaas.adapter.RecyclerCursorAdapterAll;
-import com.jcedar.visinaas.adapter.WrappingLinearLayoutManager;
+import com.jcedar.visinaas.io.adapters.StudentCursorAdapter;
 import com.jcedar.visinaas.provider.DataContract;
 
-public class SearchFragment extends Fragment
+public class SearchFragment extends ListFragment
         implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private static final String ARG_PARAM1 = "param1";
@@ -30,9 +29,9 @@ public class SearchFragment extends Fragment
     private static final String _POSITION = "POSITION";
 
     private Listener mListener;
-    RecyclerView recyclerView;
-    RecyclerCursorAdapterAll resultsCursorAdapter;
-    private TextView tvError;
+    StudentCursorAdapter studentListAdapter;
+    Uri dataUri;
+    TextView error;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -48,16 +47,15 @@ public class SearchFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
+        studentListAdapter = new StudentCursorAdapter(getActivity(), null, R.layout.list_n_item_student);
+        setListAdapter( studentListAdapter );
         setHasOptionsMenu(true);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(1, null, this);
+        getLoaderManager().initLoader(2, null, this);
     }
 
     @Override
@@ -67,18 +65,22 @@ public class SearchFragment extends Fragment
         ViewGroup rootView;
 
             rootView =
-                    (ViewGroup) inflater.inflate(R.layout.fragment_home1, container, false);
+                    (ViewGroup) inflater.inflate(R.layout.fragment_search, container, false);
 
-        recyclerView = (RecyclerView) rootView.findViewById( R.id.recyclerview );
-        resultsCursorAdapter = new RecyclerCursorAdapterAll( getActivity() );
+        ListView listView = (ListView) rootView.findViewById(android.R.id.list );
 
-        recyclerView.setLayoutManager(new WrappingLinearLayoutManager(getContext()));
-        recyclerView.setNestedScrollingEnabled(false);
-        recyclerView.setHasFixedSize(false);
-        recyclerView.setAdapter(resultsCursorAdapter);
-        tvError = (TextView) rootView.findViewById(R.id.tvErrorMag);
+        error = (TextView) rootView.findViewById(R.id.tvErrorMag);
 
-        resultsCursorAdapter.setOnItemClickListener(new RecyclerCursorAdapterAll.OnItemClickListener() {
+        listView.setItemsCanFocus(true);
+        listView.setDividerHeight(0);
+        listView.setCacheColorHint(Color.WHITE);
+        listView.setSelector(R.drawable.list_selector);
+        TextView emptyView = new TextView(getActivity(), null, android.R.attr.state_empty);
+
+        ((ViewGroup) rootView.findViewById(android.R.id.empty)).addView(emptyView);
+
+
+       /* setOnItemClickListener(new RecyclerCursorAdapterAll.OnItemClickListener() {
             @Override
             public void onItemClicked(Cursor data) {
 
@@ -86,10 +88,8 @@ public class SearchFragment extends Fragment
                         data.getColumnIndex(DataContract.Students._ID));
                 Log.d(TAG, "selectedId = " + Id + _POSITION);
                 mListener.onListItemSelected(Id);
-
-
             }
-        });
+        });*/
 
         return rootView;
     }
@@ -119,24 +119,55 @@ public class SearchFragment extends Fragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        final Intent intent = BaseActivity.fragmentArgumentsToIntent(args);
-        Uri studenturi = intent.getData();
-        if(studenturi == null){
+        Uri studenturi;
+
+        /*if( args != null) {
+            String uri = args.getString("uri");
+            studenturi = Uri.parse(uri);
+
+        Log.e(TAG, studenturi +" uri in oncreateloader");
+        } else {
             studenturi = DataContract.Students.CONTENT_URI;
+            Log.e(TAG, studenturi +" uri in oncreateloader no bundle");
         }
+        */
+        Loader<Cursor> cursorLoader;
 
-        Loader<Cursor> cursorLoader = null;
+        if (dataUri != null ){
+            Log.e(TAG, dataUri +" dataUri inside loader");
 
-            cursorLoader = new CursorLoader(getActivity(), studenturi,
+            cursorLoader = new CursorLoader(getActivity(), dataUri,
+                    DataContract.Students.PROJECTION_ALL,
+                    null, null, DataContract.Students.NAME +" ASC");
+
+            return cursorLoader;
+        }
+        else {
+            cursorLoader = new CursorLoader(getActivity(), DataContract.Students.CONTENT_URI,
                     DataContract.Students.PROJECTION_ALL,
                     null, null, DataContract.Students.SORT_ORDER_DEFAULT);
+        }
 
         return cursorLoader;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        resultsCursorAdapter.swapCursor(data);
+
+        studentListAdapter.swapCursor(data);
+
+        data.moveToFirst();
+        Log.e(TAG, data.getCount() +" cursor value");
+
+        if ( data.getCount() == 0){
+            error.setVisibility(View.VISIBLE);
+            error.setText("No result found");
+        }
+
+        /*while ( !data.isAfterLast()){
+            data.moveToNext();
+        } */
+
     }
 
     @Override
@@ -144,25 +175,53 @@ public class SearchFragment extends Fragment
 
     }
 
-    public void reloadFromArguments(Bundle arguments) {
+    public void reloadFromArguments(Uri uri, String query) {
         Log.d(TAG, "reloading fragment");
-        recyclerView.setAdapter(null);
 
         // Load new arguments
-        final Intent intent = BaseActivity.fragmentArgumentsToIntent(arguments);
-        Uri studenturi = intent.getData();
+        if(uri.toString() != null) {
+            Uri studenturi = uri;
 
-        if (studenturi == null) {
-            studenturi = DataContract.Students.CONTENT_URI;
+            dataUri = studenturi;
+
+            /*if (studenturi == null) {
+                studenturi = DataContract.Students.CONTENT_URI;
+            }*/
+
+            Log.e(TAG, studenturi.toString() + " uri search");
+
+            Bundle arguments = new Bundle();
+            arguments.putString("uri", studenturi.toString());
+
+            if(isAdded()){
+               getLoaderManager().restartLoader(2, arguments, this);
+                 /*Cursor c = new DatabaseHelper(getActivity()).getSearch(query);
+                if (c.moveToFirst()) {
+                   studentListAdapter.swapCursor(c);
+                    Log.e(TAG, "I got something for "+query);
+
+                }c.close();*/
+            }
+
         }
-
-        Log.e(TAG, studenturi.toString() +" uri search");
-        resultsCursorAdapter = new RecyclerCursorAdapterAll(getActivity());
-        recyclerView.setAdapter(resultsCursorAdapter);
-
-        getLoaderManager().restartLoader(1, arguments, this);
     }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        if (isAdded()){
+            Cursor cursor = (Cursor) studentListAdapter.getItem(position);
+            if( cursor != null ){
+                long studentId = cursor.getLong(
+                        cursor.getColumnIndex( DataContract.Students._ID)
+                );
+                mListener.onListItemSelected(studentId);
+            }
+        }
+    }
+
     public interface Listener {
         void onListItemSelected(long studentId);
     }
+
 }
