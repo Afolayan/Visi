@@ -318,12 +318,12 @@ public class NavigationDrawerFragment extends Fragment {
                     builder.addSectionItem(MenuConstants.NAVDRAWER_ITEM_DASHBOARD,
                                     R.string.nav_drawer_item_dashboard,
                                     R.drawable.ic_group, false, true)
-                            .addSectionItem(MenuConstants.NAVDRAWER_ITEM_ONE_PARTICIPANT,
-                                    R.string.nav_drawer_item_participant,
-                                    R.drawable.ic_assessment, false, true)
                             .addSectionItem(MenuConstants.NAVDRAWER_ITEM_PROFILE,
                                     R.string.nav_drawer_item_profile,
-                                    R.drawable.ic_account_balance, false, true);
+                                    R.drawable.ic_account_balance, false, true)
+                            .addSectionItem(MenuConstants.NAVDRAWER_ITEM_ADD_UPDATE,
+                                    R.string.nav_drawer_item_add_update,
+                                    R.drawable.ic_assessment, false, true);
 
                             builder.addSection(-3, R.string.nav_drawer_item_about_us)
                              //About should be added to settings
@@ -331,8 +331,7 @@ public class NavigationDrawerFragment extends Fragment {
                                     R.drawable.ic_drawer_settings, true, true)
                             .addSectionItem(MenuConstants.NAVDRAWER_ITEM_SIGN_OUT, R.string.nav_drawer_item_sign_out,
                                     R.drawable.ic_sign_out, true, true);
-                        /*.addSectionItem(MenuConstants.NAVDRAWER_ITEM_HELP, R.string.nav_drawer_item_help,
-                                R.drawable., true, true);*/
+
 
 
         return builder.build();
@@ -352,8 +351,8 @@ public class NavigationDrawerFragment extends Fragment {
                 startActivity(intent);
                 getActivity().finish();
                 break;
-            case MenuConstants.NAVDRAWER_ITEM_ONE_PARTICIPANT:
-                intent = new Intent(getActivity(), SearchActivity.class);
+            case MenuConstants.NAVDRAWER_ITEM_ADD_UPDATE:
+                intent = new Intent(getActivity(), AddUpdateActivity.class);
                 startActivity(intent);
                 getActivity().finish();
                 break;
@@ -524,24 +523,18 @@ public class NavigationDrawerFragment extends Fragment {
         // symbols for navdrawer items (indices must correspond to array below). This is
         // not a list of items that are necessarily *present* in the Nav Drawer; rather,
         // it's a list of all possible items.
-        int NAVDRAWER_ITEM_MKT_PARTICIPANT = 0;
+        /*int NAVDRAWER_ITEM_MKT_PARTICIPANT = 0;
         int NAVDRAWER_ITEM_SETTLEMENTS = 1;
-        int NAVDRAWER_ITEM_REMIITTANCE = 2;
+        int NAVDRAWER_ITEM_REMIITTANCE = 2;*/
         int NAVDRAWER_ITEM_PROFILE = 3;
         int NAVDRAWER_ITEM_MKT_DEBT = 4;
         int NAVDRAWER_ITEM_SETTINGS = 5;
-        int NAVDRAWER_ITEM_CREDIT_BATCH = 6;
-        int NAVDRAWER_ITEM_DEBIT_BATCH = 7;
+        int NAVDRAWER_ITEM_ADD_UPDATE = 6;
         int NAVDRAWER_ITEM_ABOUT = 8;
         int NAVDRAWER_ITEM_HELP = 9;
         int NAVDRAWER_ITEM_DASHBOARD = 10;
         int NAVDRAWER_ITEM_ONE_PARTICIPANT = 11;
-        int NAVDRAWER_ITEM_ONE_SETTLEMENTS = 12;
-        int NAVDRAWER_ITEM_CREDIT_ADVICE = 13;
-        int NAVDRAWER_ITEM_DEBIT_ADVICE = 14;
         int NAVDRAWER_ITEM_SIGN_OUT = 15;
-        int NAVDRAWER_ITEM_CREATE_CAPACITY = 16;
-        int NAVDRAWER_ITEM_OVERVIEW = 17;
         int NAVDRAWER_ITEM_INVALID = -1;
         int NAVDRAWER_ITEM_SEPARATOR = -2;
         int NAVDRAWER_ITEM_SEPARATOR_SPECIAL = -3;

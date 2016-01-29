@@ -10,6 +10,10 @@ import com.google.gson.annotations.SerializedName;
 public class Student {
 
     @Expose
+    @SerializedName("id")
+    private String id;
+
+    @Expose
     @SerializedName("name")
     private String name;
 
@@ -36,8 +40,18 @@ public class Student {
     @Expose @SerializedName("dobNumber")
     private String dobNumber;
 
+    @Expose @SerializedName("updateInfo")
+    private String updateInfo;
+
+    @Expose @SerializedName("isAlumni")
+    private String isAlumni;
+
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getGender() {
@@ -66,6 +80,14 @@ public class Student {
 
     public String getDobNumber() {
         return dobNumber;
+    }
+
+    public String getUpdateInfo() {
+        return updateInfo;
+    }
+
+    public String getIsAlumni() {
+        return isAlumni;
     }
 
     public static Student[] fromJson(String json){

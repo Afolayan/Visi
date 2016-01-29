@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.jcedar.visinaas.helper.FormatUtils;
 import com.jcedar.visinaas.helper.Lists;
 import com.jcedar.visinaas.io.model.Student;
 import com.jcedar.visinaas.provider.DataContract;
@@ -50,6 +49,8 @@ public class StudentChapterHandler extends JSONHandler{
                         .withValue(DataContract.StudentsChapter.DATE_OF_BIRTH, student.getDateOfBirth())
                         .withValue(DataContract.StudentsChapter.DOB_NUMBER, student.getDobNumber())
                         .withValue(DataContract.StudentsChapter.PHONE_NUMBER, student.getPhoneNumber())
+                        .withValue(DataContract.StudentsChapter.IS_ALUMNI, student.getIsAlumni())
+                        .withValue(DataContract.StudentsChapter.UPDATE_INFO, student.getUpdateInfo())
                         .withValue(DataContract.StudentsChapter.UPDATED, String.valueOf(System.currentTimeMillis()));
 
                 Log.d(TAG, "Data from Json" + student.getName() + " " + student.getChapter());

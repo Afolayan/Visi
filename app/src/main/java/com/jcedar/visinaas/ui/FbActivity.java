@@ -45,6 +45,11 @@ import com.jcedar.visinaas.io.jsonhandlers.StudentHandler;
 import com.jcedar.visinaas.io.model.Student;
 import com.jcedar.visinaas.provider.DataContract;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -142,6 +147,10 @@ public class FbActivity extends FragmentActivity {
                         }
                         GetAllData allData = new GetAllData();
                         allData.execute();
+
+                       /* AppHelper.pullAndSaveAllStudentData();
+                        AppHelper.pullAndSaveStudentChapterData();*/
+
                         startActivity(new Intent(FbActivity.this, DashboardActivity.class));
                         AccountUtils.setFirstRun(false, FbActivity.this);
                         FbActivity.this.finish();
@@ -156,7 +165,16 @@ public class FbActivity extends FragmentActivity {
     }
 
     public class GetAllData extends AsyncTask<Void, Void, Void> {
+        ProgressDialog dialog = new ProgressDialog(FbActivity.this);
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog.setMessage("Verifying email address....");
+            dialog.setTitle("Please Wait");
+            dialog.setCancelable(false);
+            dialog.setIndeterminate(true);
+        }
         public GetAllData(){
 
         }
@@ -190,7 +208,7 @@ public class FbActivity extends FragmentActivity {
                 }
                 Log.e(TAG, "starting student chapter data response");
                 String response =  ServiceHandler.makeServiceCall
-                        (AppSettings.SERVER_URL +"getUsersChapter.php?chapter="+chapter, ServiceHandler.GET);
+                        (AppSettings.SERVER_URL +"get_user_chapter.php?chapter="+chapter, ServiceHandler.GET);
                 if(response == null){
                     return null;
                 }
@@ -213,9 +231,10 @@ public class FbActivity extends FragmentActivity {
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if( dialog.isShowing())
+                dialog.dismiss();
         }
     }
 
@@ -289,7 +308,7 @@ public class FbActivity extends FragmentActivity {
            String result="";
             try {
                 String url = AppSettings.SERVER_URL +"check_email.php?email="+emailS;
-                result =  serviceHandler.makeServiceCall(url, ServiceHandler.GET);
+                result =  ServiceHandler.makeServiceCall(url, ServiceHandler.GET);
                 Log.e(TAG, result +" json");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -298,19 +317,43 @@ public class FbActivity extends FragmentActivity {
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        protected void onPostExecute(String jsonString) {
+            super.onPostExecute(jsonString);
+
+            Object json;
+            JSONObject jsonObject;
+            try {
+                json = new JSONTokener( jsonString ).nextValue();
+
+                if (json instanceof JSONObject) {
+                    //you have an object
+                    jsonObject = new JSONObject(jsonString);
+                    String ss = jsonObject.getString("status");
+                    switch (ss) {
+                        case "404":
+                            UIUtils.showAlert("Oops!!!", emailS + " is not found in the database", FbActivity.this);
+                            break;
+                        case "101":
+                            UIUtils.showAlert("Oops!!!", "Enter a valid email address", FbActivity.this);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (json instanceof JSONArray) {
+                    //you have an array
+                    parseUserJson( jsonString );
+                    isEmailChecked = true;
+                    loginBtn.setVisibility(View.VISIBLE);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
             if( dialog.isShowing())
                 dialog.dismiss();
-            if ( s.equals("404")){
-                UIUtils.showAlert("Oops!!!", emailS+ " is not found in the database", FbActivity.this);
-            } else if ( s.equals("101")){
-                UIUtils.showAlert("Oops!!!", "Enter a valid email address", FbActivity.this);
-            } else {
-                parseUserJson(s);
-                isEmailChecked = true;
-                loginBtn.setVisibility(View.VISIBLE);
-            }
+
         }
     }
 
@@ -363,6 +406,8 @@ public class FbActivity extends FragmentActivity {
             AccountUtils.setUserCourse(this, student[0].getCourse());
             AccountUtils.setUserPhoneNumber(this, student[0].getPhoneNumber());
             AccountUtils.setUserDOB(this, student[0].getDateOfBirth());
+            Boolean b = Boolean.getBoolean(student[0].getIsAlumni());
+            AccountUtils.setIsAlumni(this, b);
 
             Log.e(TAG, student[0].getChapter() +" chapter");
         } catch (Exception e){

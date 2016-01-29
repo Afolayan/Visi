@@ -69,7 +69,7 @@ public abstract class BaseActivity extends ActionBarActivity implements
                         return;
                     }
 
-                    Account account = new Account(accountName, getResources().getString(R.string.power_account_type));
+                    Account account = new Account(accountName, getResources().getString(R.string.account_type));
                     boolean syncActive = ContentResolver.isSyncActive(
                             account, DataContract.CONTENT_AUTHORITY);
                     boolean syncPending = ContentResolver.isSyncPending(

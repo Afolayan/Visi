@@ -23,6 +23,7 @@ import com.facebook.AppEventsLogger;
 import com.jcedar.visinaas.R;
 import com.jcedar.visinaas.helper.AccountUtils;
 import com.jcedar.visinaas.provider.DataContract;
+import com.jcedar.visinaas.sync.SyncHelper;
 import com.jcedar.visinaas.ui.view.SlidingTabLayout;
 
 import java.util.ArrayList;
@@ -175,8 +176,12 @@ public class DashboardActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
+        switch ( id ){
+            case R.id.action_settings:
+            break;
+            case R.id.action_update:
+                SyncHelper mSyncHelper = new SyncHelper(this);
+                mSyncHelper.requestManualSync();
         }
 
         return super.onOptionsItemSelected(item);

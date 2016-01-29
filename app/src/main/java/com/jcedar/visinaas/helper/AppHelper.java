@@ -29,8 +29,8 @@ public class AppHelper  {
         this.context = context;
     }
 
-    public void pullAndSaveAllStudentData(){
-        new Thread(new Runnable() {
+    public static void pullAndSaveAllStudentData(){
+        Thread t1 = new Thread(new Runnable() {
             public void run() {
                 try {
                     String response =  ServiceHandler.makeServiceCall
@@ -53,12 +53,18 @@ public class AppHelper  {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
+        t1.start();
+        try {
+            t1.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    public void pullAndSaveStudentChapterData(){
-        new Thread(new Runnable() {
+    public static void pullAndSaveStudentChapterData(){
+        Thread t1 = new Thread(new Runnable() {
             public void run() {
                 try {
                     String chapter="";
@@ -86,7 +92,12 @@ public class AppHelper  {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
+        try {
+            t1.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 

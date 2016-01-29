@@ -57,7 +57,7 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="action_sign_in_register">Sign in</string>
     <string name="btn_continue">Continue</string>
-    <string name="power_account_type">www.powercollectng.com</string>
+    <string name="account_type">www.jcedar.com.ng</string>
     <!--<string name="power_account_type">www.splasherstech.com</string>-->
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_invalid_email">This email address is invalid</string>
@@ -183,4 +183,9 @@
     <string name="version">Version</string>
     <string name="developer">Developer</string>
     <string name="designer">Designer</string>
+    <string name="action_update">Update</string>
+    <string name="nav_drawer_item_add_update">Update Names</string>
+    <string name="action_add">Add</string>
+    <string name="title_activity_update">Update</string>
+    <string name="title_activity_add">Add A New Name</string>
 </resources>

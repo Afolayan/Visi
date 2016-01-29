@@ -40,6 +40,7 @@ public class AccountUtils {
     private static final String PREF_CHAPTER = "chapter";
     private static final String PREF_PHONE_NUMBER = "phone_number";
     private static final String PREF_DOB = "date_of_birth";
+    private static final String PREF_ALUMNI = "isAlumni";
     public static final String PROPERTY_REG_ID = "registration_id";
     public static final String PROPERTY_APP_VERSION = "appVersion";
 
@@ -104,7 +105,7 @@ public class AccountUtils {
     public static Account getChosenAccount(final Context context) {
         String account = getChosenAccountName(context);
         if (account != null) {
-            return new Account(account, context.getString(R.string.power_account_type));
+            return new Account(account, context.getString(R.string.account_type));
         } else {
             return null;
         }
@@ -113,6 +114,8 @@ public class AccountUtils {
 
     // If syncing return true
     public static boolean signOut(Context context){
+
+        //Remove reg_id from server( push userId)
 
         //AccountUtils.setLoggedAccountName(context, getChosenAccountName(context));
         Account account = AccountUtils.getChosenAccount(context);
@@ -196,7 +199,7 @@ public class AccountUtils {
 
     public static void setUserChapter(final Context context, final String chapter){
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        sp.edit().putString(PREF_CHAPTER, chapter).commit();
+        sp.edit().putString(PREF_CHAPTER, chapter).apply();
     }
 
     public static String getUserChapter(final Context context) {
@@ -207,7 +210,7 @@ public class AccountUtils {
 
     public static void setUserEmail(final Context context, final String email){
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        sp.edit().putString(PREF_EMAIL, email).commit();
+        sp.edit().putString(PREF_EMAIL, email).apply();
     }
 
     public static String getUserEmail(final Context context) {
@@ -217,7 +220,7 @@ public class AccountUtils {
 
     public static void setUserCourse(final Context context, final String course){
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        sp.edit().putString(PREF_COURSE, course).commit();
+        sp.edit().putString(PREF_COURSE, course).apply();
     }
 
     public static String getUserCourse(final Context context) {
@@ -227,7 +230,7 @@ public class AccountUtils {
 
     public static void setUserPhoneNumber(final Context context, final String phone){
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        sp.edit().putString(PREF_PHONE_NUMBER, phone).commit();
+        sp.edit().putString(PREF_PHONE_NUMBER, phone).apply();
     }
 
     public static String getUserPhoneNumber(final Context context) {
@@ -235,9 +238,21 @@ public class AccountUtils {
         return sp.getString(PREF_PHONE_NUMBER, null);
     }
 
+    public static void setIsAlumni(final Context context, final boolean isAlumni){
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        sp.edit().putBoolean(PREF_ALUMNI, isAlumni).apply();
+    }
+
+    public static boolean isAlumni(final Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        return sp.getBoolean(PREF_ALUMNI, false);
+    }
+
+
+
     public static void setUserDOB(final Context context, final String dob){
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        sp.edit().putString(PREF_DOB, dob).commit();
+        sp.edit().putString(PREF_DOB, dob).apply();
     }
 
     public static String getUserDOB(final Context context) {

@@ -26,6 +26,7 @@ public class RecyclerCursorAdapter extends RecyclerViewCursorAdapter<RecyclerCur
         super();
 
         this.layoutInflater = LayoutInflater.from(context);
+        setHasStableIds(true);
     }
 
     public void setOnItemClickListener(final OnItemClickListener onItemClickListener)

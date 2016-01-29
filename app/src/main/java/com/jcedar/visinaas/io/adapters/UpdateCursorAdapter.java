@@ -15,16 +15,15 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.jcedar.visinaas.R;
-import com.jcedar.visinaas.helper.FormatUtils;
 import com.jcedar.visinaas.provider.DataContract;
 
 /**
  * Created by Afolayan on 21/8/2015.
  */
-public class StudentCursorAdapter extends CursorAdapter {
+public class UpdateCursorAdapter extends CursorAdapter {
 
 
-    public static final String TAG = StudentCursorAdapter.class.getSimpleName();
+    public static final String TAG = UpdateCursorAdapter.class.getSimpleName();
 
     private int lastAnimatedPosition = -1;
 
@@ -32,7 +31,7 @@ public class StudentCursorAdapter extends CursorAdapter {
     private boolean delayEnterAnimation = true;
 
     private int mLayoutResource;
-    public StudentCursorAdapter(Context context, Cursor c, int layoutResource) {
+    public UpdateCursorAdapter(Context context, Cursor c, int layoutResource) {
         super(context, c, 0);
         mLayoutResource = layoutResource;
     }
@@ -52,10 +51,10 @@ public class StudentCursorAdapter extends CursorAdapter {
         title.setTypeface(null, Typeface.BOLD);
         String titleText = cursor.getString(
                 cursor.getColumnIndex(DataContract.Students.NAME));
-        if(  context.getClass().getSimpleName().equals("CourseDetailsActivity" ))
+        title.setText(titleText);
+       /* if(  context.getClass().getSimpleName().equals("CourseDetailsActivity" ))
         title.setText(FormatUtils.ellipsize(titleText));
         else title.setText(titleText);
-
 
         TextView mark = (TextView)view.findViewById(R.id.lblDoB);
         mark.setTypeface(null, Typeface.BOLD);
@@ -67,7 +66,7 @@ public class StudentCursorAdapter extends CursorAdapter {
         unit.setTypeface(null, Typeface.BOLD);
         String puc = cursor.getString(
                 cursor.getColumnIndex(DataContract.Students.COURSE));
-       unit.setText("Course: "+puc);
+       unit.setText("Course: "+puc);*/
 
 //
 //        TextView sortCode = (TextView)view.findViewById(R.id.sort_code);

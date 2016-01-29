@@ -16,10 +16,10 @@ import java.util.ArrayList;
 /**
  * Created by Afolayan on 13/10/2015.
  */
-public class StudentHandler extends JSONHandler{
-    private static final String TAG = StudentHandler.class.getSimpleName();
+public class StudentUpdateHandler extends JSONHandler{
+    private static final String TAG = StudentUpdateHandler.class.getSimpleName();
     private int studentCount;
-    public StudentHandler(Context context) {
+    public StudentUpdateHandler(Context context) {
         super(context);
     }
 
@@ -37,11 +37,13 @@ public class StudentHandler extends JSONHandler{
 
 
         for ( Student student: currentStudent) {
+            Log.e(TAG, "id is "+student.getId());
             try {
                 Uri uri = DataContract.addCallerIsSyncAdapterParameter(
                         DataContract.Students.CONTENT_URI);
                 ContentProviderOperation.Builder builder = ContentProviderOperation
-                        .newInsert(uri)
+                        .newUpdate(uri)
+                        .withSelection(DataContract.Students._ID+"=?", new String[]{student.getId()})
                         .withValue(DataContract.Students.NAME, student.getName())
                         .withValue(DataContract.Students.GENDER, student.getGender())
                         .withValue(DataContract.Students.PHONE_NUMBER, student.getPhoneNumber())
