@@ -23,9 +23,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:text="Afolayan"
+                android:fontFamily="sans-serif"
+                android:textStyle="normal"
                 android:id="@+id/lblName"
-                android:gravity="center_vertical"/>
+                android:gravity="center_horizontal"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
            <!-- <TextView
                 android:layout_width="wrap_content"

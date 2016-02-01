@@ -96,7 +96,7 @@ public class DataContract
 
         /** A projection of all tables in studentsChapter table */
         public static final String[] PROJECTION_ALL = {
-                _ID,  NAME, GENDER, CHAPTER, EMAIL, COURSE, PHONE_NUMBER, DATE_OF_BIRTH, DOB_NUMBER,
+                _ID,  ID, NAME, GENDER, CHAPTER, EMAIL, COURSE, PHONE_NUMBER, DATE_OF_BIRTH, DOB_NUMBER,
                 UPDATED, IS_ALUMNI, UPDATE_INFO
 
         };
@@ -125,6 +125,7 @@ public class DataContract
     }
 
     interface StudentChapterColumns{
+        String ID = "ID";
         String NAME = "name";
         String GENDER = "gender";
         String CHAPTER = "chapter";

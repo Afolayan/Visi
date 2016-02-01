@@ -75,4 +75,8 @@
 
     <style name="Theme.Gardener.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="DialogTheme" parent="@android:style/Theme.Holo.Light.Dialog">
+        <item name="android:textColorHint">@color/green</item>
+        <item name="android:actionBarSize">30dp</item>
+    </style>
 </resources>

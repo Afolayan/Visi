@@ -248,5 +248,4 @@ public class DataProvider extends ContentProvider {
         mOpenHelper = new DatabaseHelper(getContext());
     }
 
-
 }

@@ -25,7 +25,7 @@ public class AppHelper  {
 
     public static Context context;
 
-    public AppHelper(final Context context) {
+    public AppHelper( Context context) {
         this.context = context;
     }
 
@@ -100,6 +100,36 @@ public class AppHelper  {
         }
 
     }
+    public void pullAndSaveStudentChapterDataForSync(final String chapter){
+
+                try {
+
+                    Log.e(TAG, "starting student chapter data response");
+                    String response =  ServiceHandler.makeServiceCall
+                            (AppSettings.SERVER_URL +"get_user_chapter.php?chapter="+chapter, ServiceHandler.GET);
+                    if(response == null){
+                        return;
+                    }
+                    Log.e(TAG, response + " response update");
+
+                    /*DataProvider dp = new DataProvider();
+                    dp.deleteRecreateTable(); //Recreate the student_chapter table
+*/
+                    ArrayList<ContentProviderOperation> operations =
+                            new StudentChapterHandler(context).parse(response);
+                    if (operations.size() > 0) {
+                        ContentResolver resolver = context.getContentResolver();
+                        resolver.applyBatch(DataContract.CONTENT_AUTHORITY, operations);
+
+                    }
+
+
+                }catch (IOException | OperationApplicationException | RemoteException e) {
+                    e.printStackTrace();
+                }
+
+    }
+
 
 
 }

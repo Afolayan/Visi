@@ -180,11 +180,10 @@ public class AllStudentsDetailsFragment extends Fragment
 
             String genderStr1 = data.getString(
                     data.getColumnIndexOrThrow(DataContract.Students.GENDER));
-            if(genderStr1.equalsIgnoreCase("M"))
+            if(genderStr1.startsWith("M"))
                 gender.setText("Male");
 
-            else if (genderStr1.equalsIgnoreCase("F"))
-                gender.setText("Female");
+            else gender.setText("Female");
 
             chapter.setText(data.getString(
                     data.getColumnIndexOrThrow(DataContract.Students.CHAPTER)));

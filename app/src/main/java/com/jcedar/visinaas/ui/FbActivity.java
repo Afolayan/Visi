@@ -58,7 +58,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
-
 public class FbActivity extends FragmentActivity {
 
     private static final String TAG = FbActivity.class.getSimpleName();
@@ -137,6 +136,7 @@ public class FbActivity extends FragmentActivity {
 
 
                         String photoUrl = "https://graph.facebook.com/" + graphUser.getId() + "/picture?type=large";
+                        Log.e(TAG, graphUser.getId()+" get id");
                         hasGoneToFb = true;
                         try {
                             LoadProfileImage ll = new LoadProfileImage();
@@ -170,10 +170,11 @@ public class FbActivity extends FragmentActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            dialog.setMessage("Verifying email address....");
+            dialog.setMessage("Getting Required Data....");
             dialog.setTitle("Please Wait");
             dialog.setCancelable(false);
             dialog.setIndeterminate(true);
+            dialog.show();
         }
         public GetAllData(){
 
@@ -300,6 +301,7 @@ public class FbActivity extends FragmentActivity {
             dialog.setTitle("Please Wait");
             dialog.setCancelable(false);
             dialog.setIndeterminate(true);
+            dialog.show();
         }
 
 
@@ -400,6 +402,7 @@ public class FbActivity extends FragmentActivity {
             Student[] student = Student.fromJson(json);
 
         try{
+            AccountUtils.setId( this, student[0].getId());
             AccountUtils.setUserGender(this, student[0].getGender());
             AccountUtils.setUserChapter(this, student[0].getChapter());
             AccountUtils.setUserEmail(this, student[0].getEmail());
@@ -417,6 +420,7 @@ public class FbActivity extends FragmentActivity {
             if (UIUtils.checkPlayServices(this)) {
                 gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
                 regid = AccountUtils.getRegistrationId(getApplicationContext());
+                Log.e(TAG, regid);
 
                 if (regid.isEmpty()) {
                     new RegisterApp(getApplicationContext(), gcm, UIUtils.getAppVersion(getApplicationContext())).execute();

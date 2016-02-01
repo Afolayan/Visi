@@ -125,4 +125,31 @@ public class FormatUtils {
         return out;*/
         return String.format("%.2f", point);
     }
+
+    public static String makeHumanFriendlyDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
+        String strVal = sdf.format(date);
+        return strVal;
+    }
+
+    public static String makeYearMonthDay(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String strVal = sdf.format(date);
+        return strVal;
+    }
+    public static String makeTrimmedYear(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd", Locale.getDefault());
+        String strVal = sdf.format(date);
+        return strVal;
+    }
+
+    public static String removeEscapeXters(String string){
+        String ss="";
+        if(string != null ){
+            ss = string.replaceAll("\\n", "");
+            ss = ss.replaceAll("\\t", "");
+            ss = ss.replaceAll("\\r", "");
+        }
+        return ss;
+    }
 }

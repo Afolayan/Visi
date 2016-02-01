@@ -87,7 +87,6 @@
     </string-array>
     <string name="title_activity_naccounts">Accounts</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="empty_result">Account not found</string>
     <string name="empty_batch_result">No result found</string>
@@ -117,59 +116,6 @@
     <string name="title_activity_one_participant">OneParticipantActivity</string>
 
 
-    <string name="copyright">The PowerCollect Mobile is an application that automates the
-        collection of data, billing and settlement for the power sector across all
-        the market participants (Distributing Companies, Generating Companies and
-        Service Providers).</string>
-    <string name="welcome">Welcome to PowerCollect Mobile</string>
-    <string name="BDAWeb">Powercollect web address</string>
-    <string name="powered">Powered by Venture Garden Group </string>
-    <string name="developed">Developed by splashers Technologies </string>
-    <string name="BDAWeblink">power.splasherstech.com</string>
-    <string name="developedlink">www.jcedar.com.ng</string>
-    <string name="poweredlink">venturegardengroup.com</string>
-    <string name="title_activity_debit_advice">Debit Advice</string>
-    <string name="title_activity_credit_advice">CreditAdviceActivity</string>
-    <string name="title_activity_dadvice_detail">DAdviceDetailActivity</string>
-    <string name="title_activity_cadvice_detail">CAdviceDetailActivity</string>
-
-    <string name="capacity">Enter capacity</string>
-    <string name="country_prompt">Select Generating Unit</string>
-
-
-    <string name="unit_prompt">Select Unit</string>
-    <string-array name="unit_arrays">
-        <item>MW</item>
-    </string-array>
-
-    <string name="period_prompt">Select Period</string>
-    <string name="nav_drawer_item_data_capture">Data Capture</string>
-    <string-array name="period_arrays">
-        <item>00:00-01:00</item>
-        <item>01:00-02:00</item>
-        <item>02:00-03:00</item>
-        <item>03:00-04:00</item>
-        <item>04:00-05:00</item>
-        <item>05:00-06:00</item>
-        <item>06:00-07:00</item>
-        <item>07:00-08:00</item>
-        <item>08:00-09:00</item>
-        <item>09:00-10:00</item>
-        <item>10:00-11:00</item>
-        <item>11:00-12:00</item>
-        <item>12:00-13:00</item>
-        <item>13:00-14:00</item>
-        <item>14:00-15:00</item>
-        <item>15:00-16:00</item>
-        <item>16:00-17:00</item>
-        <item>17:00-18:00</item>
-        <item>18:00-19:00</item>
-        <item>19:00-20:00</item>
-        <item>20:00-21:00</item>
-        <item>21:00-22:00</item>
-        <item>22:00-23:00</item>
-        <item>23:00-24:00</item>
-    </string-array>
     <string name="title_activity_main">MainActivity</string>
     <string name="check_email">Check Email</string>
     <string name="title_activity_pic_view">PicViewActivity</string>

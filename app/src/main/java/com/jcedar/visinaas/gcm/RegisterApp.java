@@ -87,12 +87,15 @@ public class RegisterApp extends AsyncTask<Void, Void, String> {
 
 
     private void sendRegistrationIdToBackend() {
+        String email = AccountUtils.getUserEmail(ctx);
+        String userId = AccountUtils.getId(ctx);
         URI url = null;
         try {
-            String email = AccountUtils.getUserEmail(ctx);
 
-            url = new URI(AppSettings.SERVER_URL +"register.php?regId=" + regid+"&email="+ (email!= null ? email: "") );
-            //url = new URI("http://www.mobile.jcedar.com.ng/gcm_server/register.php?regId=" + regid+"&email="+ (email!= null ? email: "") );
+            url = new URI(AppSettings.SERVER_URL +"register.php?regId="
+                    + regid+"&userId="+userId+"&email="
+                    + (email!= null ? email: "") );
+            Log.e(TAG, url.toString());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -106,6 +109,13 @@ public class RegisterApp extends AsyncTask<Void, Void, String> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        /*String url1 = AppSettings.SERVER_URL +"register.php?regId="
+                + regid+"userId="+userId+"&email="
+                + (email!= null ? email: "");
+        String response =  ServiceHandler.makeServiceCall (url1, ServiceHandler.GET);
+        Log.e(TAG, response+ " registration");*/
+
     }
 
 

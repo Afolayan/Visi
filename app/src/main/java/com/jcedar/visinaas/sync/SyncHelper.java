@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.jcedar.visinaas.gcm.GcmIntentServices;
+import com.jcedar.visinaas.helper.AccountUtils;
 import com.jcedar.visinaas.helper.AppHelper;
 import com.jcedar.visinaas.helper.AppSettings;
 import com.jcedar.visinaas.helper.PrefUtils;
@@ -91,8 +92,11 @@ public class SyncHelper {
                         syncSummary.putInt(NEW_STUDENT_COUNT, studentHandler.getStudentCount());
                         batch.addAll( operations );
 
-                        AppHelper.pullAndSaveStudentChapterData();
-
+                        if ( AccountUtils.getUserChapter(mContext) != null){
+                            String chapter = AccountUtils.getUserChapter(mContext);
+                            Log.e(TAG, chapter + " chapter for new update");
+                            new AppHelper(mContext).pullAndSaveStudentChapterDataForSync(chapter);
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -136,8 +140,12 @@ public class SyncHelper {
                                 studentHandler.parse(response);
                         syncSummary.putInt(UPDATE_COUNT, studentHandler.getStudentCount());
                         batch.addAll( operations );
+                        if ( AccountUtils.getUserChapter(mContext) != null){
+                            String chapter = AccountUtils.getUserChapter(mContext);
+                            Log.e(TAG, chapter + " chapter for new update");
+                            new AppHelper(mContext).pullAndSaveStudentChapterDataForSync(chapter);
+                        }
 
-                        AppHelper.pullAndSaveStudentChapterData();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -160,7 +168,7 @@ public class SyncHelper {
     }
 
 
-    private boolean isOnline() {
+    public boolean isOnline() {
         ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(
                 Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null &&
@@ -172,7 +180,7 @@ public class SyncHelper {
     public void requestManualSync(){
         UIUtils.showToast(mContext, "Performing sync" );
         GcmIntentServices u = new GcmIntentServices();
-        t.start();
+        if ( isOnline() ) t.start();
         try {
             t.join();
         } catch (InterruptedException e) {

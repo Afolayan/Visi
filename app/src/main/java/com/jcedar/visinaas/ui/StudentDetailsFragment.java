@@ -1,7 +1,7 @@
 package com.jcedar.visinaas.ui;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -208,10 +208,10 @@ public class StudentDetailsFragment extends Fragment
             String genderStr1 = data.getString(
                     data.getColumnIndexOrThrow(DataContract.StudentsChapter.GENDER));
 
-            if(genderStr1.equalsIgnoreCase("M"))
+            if(genderStr1.startsWith("M"))
                 gender.setText("Male");
 
-            else if (genderStr1.equalsIgnoreCase("F"))
+            else
                 gender.setText("Female");
 
            chapter.setText(data.getString(

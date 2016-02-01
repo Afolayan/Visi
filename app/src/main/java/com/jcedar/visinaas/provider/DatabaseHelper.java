@@ -33,24 +33,10 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     }
 
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-       /* // Cancel all current or pending syncs
-        Account account = AccountUtils.getChosenAccount(mContext);
-        if (account != null) {
-            ContentResolver.cancelSync(account, AppSettings.PROVIDER_AUTHORITY);
-        }
 
-        //upgradeDb(db, oldVersion);
-        upgradeDb(db, oldVersion, newVersion);
-
-        if (account != null) {
-            Bundle settingsBundle = new Bundle();
-            settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-            settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-            Log.i(TAG, "DB upgrade complete requesting resync");
-            ContentResolver.requestSync(account, AppSettings.PROVIDER_AUTHORITY, settingsBundle);
-        }*/
         Log.e(TAG, "Upgrading database from version " + oldVersion + " to "
                 + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + Tables.STUDENT_SEARCH);
@@ -76,24 +62,31 @@ public class DatabaseHelper extends SQLiteOpenHelper
             + DataContract.Students.DOB_NUMBER + " VARCHAR ,"
             + DataContract.Students.IS_ALUMNI + " VARCHAR ,"
             + DataContract.Students.UPDATE_INFO + " VARCHAR ,"
-            + DataContract.Students.UPDATED + " LONG DEFAULT 0 )";
+            + DataContract.Students.UPDATED + " LONG DEFAULT 0, "
+            + "UNIQUE (" + DataContract.Students.NAME + ","
+            + DataContract.Students.EMAIL
+            + ") ON CONFLICT REPLACE )" ;
 
 
-    final static String SQL_CREATE_STUDENTS_CHAPTER_TABLE = "CREATE TABLE "
+
+    public final static String SQL_CREATE_STUDENTS_CHAPTER_TABLE = "CREATE TABLE "
             + Tables.STUDENTS_CHAPTER + "("
-            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + DataContract.StudentsChapter.NAME + " VARCHAR NOT NULL,"
-            + DataContract.StudentsChapter.GENDER + " VARCHAR NOT NULL,"
-            + DataContract.StudentsChapter.CHAPTER + " VARCHAR NOT NULL,"
-            + DataContract.StudentsChapter.EMAIL + " VARCHAR NOT NULL,"
-            + DataContract.StudentsChapter.COURSE + " VARCHAR NOT NULL,"
-            + DataContract.StudentsChapter.PHONE_NUMBER + " VARCHAR ,"
-            + DataContract.StudentsChapter.DATE_OF_BIRTH + " VARCHAR ,"
-            + DataContract.Students.IS_ALUMNI + " VARCHAR ,"
-            + DataContract.Students.UPDATE_INFO + " VARCHAR ,"
-            + DataContract.StudentsChapter.DOB_NUMBER + " VARCHAR ,"
-            + DataContract.StudentsChapter.UPDATED + " LONG DEFAULT 0 )";
-
+            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + DataContract.StudentsChapter.ID + " VARCHAR NOT NULL, "
+            + DataContract.StudentsChapter.NAME + " VARCHAR NOT NULL, "
+            + DataContract.StudentsChapter.GENDER + " VARCHAR NOT NULL, "
+            + DataContract.StudentsChapter.CHAPTER + " VARCHAR NOT NULL, "
+            + DataContract.StudentsChapter.EMAIL + " VARCHAR NOT NULL, "
+            + DataContract.StudentsChapter.COURSE + " VARCHAR NOT NULL, "
+            + DataContract.StudentsChapter.PHONE_NUMBER + " VARCHAR, "
+            + DataContract.StudentsChapter.DATE_OF_BIRTH + " VARCHAR, "
+            + DataContract.StudentsChapter.IS_ALUMNI + " VARCHAR , "
+            + DataContract.StudentsChapter.UPDATE_INFO + " VARCHAR,"
+            + DataContract.StudentsChapter.DOB_NUMBER + " VARCHAR, "
+            + DataContract.StudentsChapter.UPDATED + " LONG DEFAULT 0, "
+            + "UNIQUE (" + DataContract.StudentsChapter.NAME + ","
+            + DataContract.StudentsChapter.EMAIL
+            + ") ON CONFLICT REPLACE )" ;
 
     final static String SQL_CREATE_STUDENTS_SEARCH_TABLE = "CREATE VIRTUAL TABLE "
             + Tables.STUDENT_SEARCH + " USING fts3("
@@ -127,7 +120,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
         db.execSQL(SQL_UPDATE_SEARCH_TABLE);
         Log.d(TAG, "Search table updating");
     }
-
 
     interface Tables {
         String STUDENTS = "students";

@@ -41,6 +41,7 @@ public class StudentChapterHandler extends JSONHandler{
                         DataContract.StudentsChapter.CONTENT_URI);
                 ContentProviderOperation.Builder builder = ContentProviderOperation
                         .newInsert(uri)
+                        .withValue(DataContract.StudentsChapter.ID, student.getId())
                         .withValue(DataContract.StudentsChapter.NAME, student.getName())
                         .withValue(DataContract.StudentsChapter.GENDER, student.getGender())
                         .withValue(DataContract.StudentsChapter.EMAIL, student.getEmail())

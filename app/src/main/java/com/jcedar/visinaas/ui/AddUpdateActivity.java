@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,18 +15,24 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.jcedar.visinaas.R;
-import com.jcedar.visinaas.helper.UIUtils;
 import com.jcedar.visinaas.io.adapters.UpdateCursorAdapter;
 import com.jcedar.visinaas.provider.DataContract;
 
 public class AddUpdateActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
+    private static final String TAG = AddUpdateActivity.class.getSimpleName();
     UpdateCursorAdapter updateCursorAdapter;
     ListView listView;
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_update);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Update Names");
+        setSupportActionBar(toolbar);
 
         listView = (ListView) findViewById(android.R.id.list);
         listView.setItemsCanFocus(true);
@@ -39,7 +46,16 @@ public class AddUpdateActivity extends BaseActivity implements LoaderManager.Loa
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                UIUtils.showToast(AddUpdateActivity.this, "Clicked on item with id "+id );
+
+                final Cursor cursor = ((UpdateCursorAdapter) parent.getAdapter()).getCursor();
+                if(cursor != null) {
+                    cursor.moveToPosition(position);
+
+                    long student_id = cursor.getLong(
+                            cursor.getColumnIndex(DataContract.StudentsChapter._ID));
+                    UpdateFragment updateFragment = UpdateFragment.newInstance( student_id );
+                    updateFragment.show( getSupportFragmentManager(), "Update Dialog Fragment");
+                }
             }
         });
     }
@@ -63,12 +79,13 @@ public class AddUpdateActivity extends BaseActivity implements LoaderManager.Loa
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NavigationDrawerFragment.MenuConstants.NAVDRAWER_ITEM_DASHBOARD;
+        return NavigationDrawerFragment.MenuConstants.NAVDRAWER_ITEM_ADD_UPDATE;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = DataContract.StudentsChapter.CONTENT_URI;
+
         return new CursorLoader(
                 this,
                 uri,

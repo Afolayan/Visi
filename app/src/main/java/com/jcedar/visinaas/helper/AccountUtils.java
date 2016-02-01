@@ -43,6 +43,7 @@ public class AccountUtils {
     private static final String PREF_ALUMNI = "isAlumni";
     public static final String PROPERTY_REG_ID = "registration_id";
     public static final String PROPERTY_APP_VERSION = "appVersion";
+    private static final String PREF_SERVER_ID = "server_id";
 
     String hash = "+MpC+7H4vWDozl9v3x+c26fTirY=";
     private static final String PREF_NAME = "name";
@@ -116,6 +117,8 @@ public class AccountUtils {
     public static boolean signOut(Context context){
 
         //Remove reg_id from server( push userId)
+        //delete content provider
+        //set all shared preference to null or delete
 
         //AccountUtils.setLoggedAccountName(context, getChosenAccountName(context));
         Account account = AccountUtils.getChosenAccount(context);
@@ -183,6 +186,16 @@ public class AccountUtils {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         return sp.getString(PREF_ID, null);
     }
+
+    public static void setId(final Context context, final String userId){
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+            sp.edit().putString(PREF_SERVER_ID, userId).commit();
+        }
+
+        public static String getId(final Context context) {
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+            return sp.getString(PREF_SERVER_ID, null);
+        }
 
 
 
